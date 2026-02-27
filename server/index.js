@@ -5,7 +5,11 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 
 // Connect Database
-connectDB();
+connectDB().then(async () => {
+    console.log('Running auto-seed...');
+    const seed = require('./seed-logic');
+    await seed();
+});
 
 const app = express();
 
