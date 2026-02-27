@@ -1,0 +1,167 @@
+:host {
+    display: block;
+    direction: rtl;
+}
+
+.select-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 80px;
+}
+
+/* Hero */
+.hero-section {
+    text-align: center;
+    margin-bottom: 55px;
+    animation: fadeInDown 0.8s ease-out;
+    color: white;
+}
+
+.main-logo {
+    height: 90px;
+    margin-bottom: 18px;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.hero-section p {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Universities Grid */
+.universities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+    animation: fadeInUp 0.9s ease-out;
+}
+
+/* University Card */
+.uni-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    height: 220px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.uni-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    border-color: #f59e0b;
+}
+
+.uni-card-img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.4s ease;
+}
+
+.uni-card:hover .uni-card-img {
+    transform: scale(1.08);
+}
+
+.uni-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.15) 0%,
+            rgba(15, 23, 42, 0.85) 100%);
+}
+
+.uni-card-info {
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    left: 0;
+    padding: 0 22px;
+    z-index: 2;
+}
+
+.uni-card-info strong {
+    display: block;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.uni-card-info span {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.82rem;
+}
+
+.uni-card-btn {
+    position: absolute;
+    bottom: 18px;
+    right: 22px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f59e0b;
+    color: #111;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 30px;
+    transition: background 0.2s ease;
+}
+
+.uni-card:hover .uni-card-btn {
+    background: #fbbf24;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .universities-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .uni-card {
+        height: 190px;
+    }
+}

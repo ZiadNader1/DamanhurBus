@@ -1,0 +1,25 @@
+<div class="select-wrapper">
+
+    <!-- Hero / Intro -->
+    <div class="hero-section">
+        <h1>دمنهور باص</h1>
+        <p>محطتك الأولى للجامعة —اختر جامعتك لحجز رحلتك</p>
+    </div>
+
+    <!-- University Cards Grid -->
+    <div class="universities-grid">
+        <div class="uni-card" *ngFor="let uni of universities" (click)="goToBooking(uni.id)">
+            <div class="uni-card-img" [style.background-image]="'url(' + uni.image + ')'"></div>
+            <div class="uni-card-overlay"></div>
+            <div class="uni-card-info">
+                <strong>{{ uni.name }}</strong>
+                <span>{{ uni.nameEn }}</span>
+            </div>
+            <div class="uni-card-btn">
+                <span>احجز الآن</span>
+                <i class="bi bi-arrow-left"></i>
+            </div>
+        </div>
+    </div>
+
+</div>

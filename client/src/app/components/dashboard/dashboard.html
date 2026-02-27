@@ -1,0 +1,198 @@
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h3>لوحة التحكم</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <button [class.active]="activeTab === 'bookings'" (click)="activeTab = 'bookings'">
+                <i class="bi bi-people"></i> الحجوزات
+            </button>
+            <button [class.active]="activeTab === 'settings'" (click)="activeTab = 'settings'">
+                <i class="bi bi-gear"></i> الإعدادات
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="main-header">
+            <h2>{{ activeTab === 'bookings' ? 'قائمة الحجوزات' : 'إعدادات الجامعات' }}</h2>
+            <div class="header-actions" *ngIf="activeTab === 'bookings'">
+                <div class="actions">
+                    <!-- University Filter -->
+                    <div class="filter-wrapper">
+                        <i class="bi bi-mortarboard filter-icon"></i>
+                        <select class="uni-select" [ngModel]="selectedUni()" (ngModelChange)="onUniChange($event)">
+                            <option value="all">كل الجامعات</option>
+                            <option *ngFor="let config of universityConfigs()" [value]="config.universityName">
+                                {{ config.universityName }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ Day Filter -->
+                    <div class="filter-wrapper" *ngIf="availableDaysForFilter().length > 0">
+                        <i class="bi bi-calendar-week filter-icon"></i>
+                        <select class="uni-select" [ngModel]="selectedDay()" (ngModelChange)="onDayChange($event)">
+                            <option value="all">كل الأيام</option>
+                            <option *ngFor="let day of availableDaysForFilter()" [value]="day">{{ day }}</option>
+                        </select>
+                    </div>
+
+                    <button class="toolbar-btn refresh-btn" (click)="fetchData()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>تحديث</span>
+                    </button>
+                    <button class="toolbar-btn png-btn" (click)="exportToPNG()">
+                        <i class="bi bi-image"></i>
+                        <span>تصدير PNG</span>
+                    </button>
+                    <button class="toolbar-btn delete-all-btn" (click)="clearList()">
+                        <i class="bi bi-trash-fill"></i>
+                        <span>مسح القائمة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Content -->
+        <div class="content-body" *ngIf="activeTab === 'bookings'">
+            <div class="table-container" id="printable-area">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الموعد</th>
+                            <th>التحرك</th>
+                            <th>الهاتف</th>
+                            <th class="no-print">التحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let group of groupedBookings()">
+                        <!-- Bus Category Header -->
+                        <tr class="bus-header">
+                            <td colspan="6">
+                                <div class="bus-title" dir="rtl">
+                                    <span>باص {{ group.busNumber }}</span>
+                                    <span class="separator"> - </span>
+                                    <span>{{ group.weekday }}</span>
+                                    <span class="separator"> - </span>
+                                    <span class="time-slot">{{ group.timeSlot }}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr *ngFor="let booking of group.bookings; let i = index">
+                            <td class="text-center">{{ (group.busNumber - 1) * 15 + i + 1 }}</td>
+                            <td>{{ booking.fullName }}</td>
+                            <td class="text-center">
+                                <ng-container *ngIf="editingBookingId !== booking._id">
+                                    {{ booking.timeSlot }}
+                                </ng-container>
+                                <select *ngIf="editingBookingId === booking._id"
+                                    [(ngModel)]="editingBookingData.timeSlot" class="edit-select">
+                                    <option *ngFor="let time of editingAvailableTimes" [value]="time">{{ time }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td>{{ booking.departureFrom }}</td>
+                            <td class="text-center">
+                                {{ booking.phoneNumber }}
+                                <div class="booking-time" *ngIf="editingBookingId !== booking._id">
+                                    {{ booking.bookingDate | date:'MMM d, y, h:mm:ss a' }}
+                                </div>
+                                <div *ngIf="editingBookingId === booking._id" style="margin-top:4px">
+                                    <input type="datetime-local" class="edit-select"
+                                        style="font-size:11px; padding:3px 5px;"
+                                        [(ngModel)]="editingBookingData.bookingDateLocal" />
+                                </div>
+                            </td>
+                            <td class="no-print">
+                                <div class="action-btns">
+                                    <ng-container *ngIf="editingBookingId !== booking._id">
+                                        <button class="btn-icon" (click)="moveBooking(booking._id, 'up')"
+                                            title="تحريك لأعلى">
+                                            <i class="bi bi-arrow-up"></i>
+                                        </button>
+                                        <button class="btn-icon" (click)="moveBooking(booking._id, 'down')"
+                                            title="تحريك لأسفل">
+                                            <i class="bi bi-arrow-down"></i>
+                                        </button>
+                                        <button class="btn-icon edit-btn" (click)="startEditing(booking)" title="تعديل">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button class="btn-icon delete-btn" (click)="deleteBooking(booking._id)"
+                                            title="حذف">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="editingBookingId === booking._id">
+                                        <button class="btn-icon save-btn" (click)="saveEdit(booking._id)" title="حفظ">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <button class="btn-icon cancel-btn" (click)="cancelEditing()" title="إلغاء">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </ng-container>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="content-body" *ngIf="activeTab === 'settings'">
+            <!-- ... Settings content remains the same ... -->
+            <div class="settings-grid">
+                <div class="uni-config-card" *ngFor="let config of universityConfigs()">
+                    <h3>{{ config.universityName }}</h3>
+
+                    <div class="setting-section">
+                        <h4><i class="bi bi-geo-alt"></i> نقاط التحرك</h4>
+                        <div class="tag-list">
+                            <span class="tag" *ngFor="let loc of config.pickupLocations; let i = index">
+                                {{ loc }}
+                                <i class="bi bi-x" (click)="removeLocation(config, i)"></i>
+                            </span>
+                            <button class="add-tag" (click)="addLocation(config)">+ إضافة</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h4><i class="bi bi-calendar-event"></i> أيام العمل</h4>
+                        <div class="tag-list">
+                            <span class="tag" *ngFor="let day of config.availableDays; let i = index">
+                                {{ day }}
+                                <i class="bi bi-x" (click)="removeDay(config, i)"></i>
+                            </span>
+                            <button class="add-tag" (click)="addDay(config)">+ إضافة</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h4><i class="bi bi-clock"></i> المواعيد</h4>
+                        <div class="tag-list">
+                            <span class="tag" *ngFor="let time of config.timeSlots; let i = index">
+                                {{ time }}
+                                <i class="bi bi-x" (click)="removeTime(config, i)"></i>
+                            </span>
+                            <button class="add-tag" (click)="addTime(config)">+ إضافة</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h4><i class="bi bi-geo-fill"></i> الوجهة</h4>
+                        <input type="text" [(ngModel)]="config.destination" class="dest-input">
+                    </div>
+
+                    <button class="save-btn" (click)="updateSetting(config)">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

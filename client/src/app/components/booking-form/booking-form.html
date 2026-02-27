@@ -1,0 +1,87 @@
+<div class="booking-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>حجز رحلة جديدة</h2>
+            <p>سجل بياناتك في خطوات بسيطة لضمان مكانك في الرحلة القادمة.</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
+
+            <!-- Weekday -->
+            <div class="form-group" [class.has-error]="errors().weekday">
+                <label for="weekday"><i class="bi bi-calendar3"></i> اليوم</label>
+                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="validate()">
+                    <option value="" disabled selected>اختر اليوم</option>
+                    <option *ngFor="let day of weekdays" [value]="day">{{day}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
+            </div>
+
+            <!-- Time Slot -->
+            <div class="form-group" [class.has-error]="errors().timeSlot">
+                <label for="timeSlot"><i class="bi bi-clock"></i> موعد الرحلة</label>
+                <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()">
+                    <option value="" disabled selected>اختر الموعد المناسب</option>
+                    <option *ngFor="let time of timeSlots" [value]="time">{{time}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
+            </div>
+
+            <!-- University -->
+            <div class="form-group" [class.has-error]="errors().university">
+                <label for="university"><i class="bi bi-building"></i> الجامعة</label>
+                <select id="university" name="university" [(ngModel)]="formData.university"
+                    (change)="onUniversityChange()" [disabled]="preselectedUniversity ? true : false">
+                    <option value="" disabled selected>اختر جامعتك</option>
+                    <option *ngFor="let uni of universities" [value]="uni">{{uni}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
+            </div>
+
+            <!-- Departure From -->
+            <div class="form-group" [class.has-error]="errors().departureFrom">
+                <label for="departureFrom"><i class="bi bi-geo-alt"></i> نقطة التحرك (من)</label>
+                <select id="departureFrom" name="departureFrom" [(ngModel)]="formData.departureFrom"
+                    (change)="validate()">
+                    <option value="" disabled selected>حدد المحطة</option>
+                    <option *ngFor="let loc of pickupLocations" [value]="loc">{{loc}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().departureFrom">{{errors().departureFrom}}</span>
+            </div>
+
+            <!-- Departure To -->
+            <div class="form-group" [class.has-error]="errors().departureTo">
+                <label for="departureTo"><i class="bi bi-geo-alt-fill"></i> الوجهة (إلى)</label>
+                <select id="departureTo" name="departureTo" [(ngModel)]="formData.departureTo" (change)="validate()">
+                    <option *ngFor="let loc of destinations" [value]="loc">{{loc}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().departureTo">{{errors().departureTo}}</span>
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-group" [class.has-error]="errors().fullName">
+                <label for="fullName"><i class="bi bi-person-badge"></i> الاسم المكتمل</label>
+                <input type="text" id="fullName" name="fullName" [(ngModel)]="formData.fullName"
+                    placeholder="أدخل اسمك كما هو في البطاقة" (input)="validate()">
+                <span class="error-msg" *ngIf="errors().fullName">{{errors().fullName}}</span>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group" [class.has-error]="errors().phoneNumber">
+                <label for="phoneNumber"><i class="bi bi-telephone"></i> رقم الهاتف (WhatsApp)</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" [(ngModel)]="formData.phoneNumber"
+                    placeholder="01xxxxxxxxx" (input)="validate()">
+                <span class="error-msg" *ngIf="errors().phoneNumber">{{errors().phoneNumber}}</span>
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="loading()">
+                {{ loading() ? 'جاري الحجز...' : ' تأكيد الحجز الآن' }}
+            </button>
+
+            <div class="success-alert" *ngIf="success()">
+                تم الحجز بنجاح! سنتواصل معك قريباً.
+            </div>
+
+        </form>
+    </div>
+</div>

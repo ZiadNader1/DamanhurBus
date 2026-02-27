@@ -1,0 +1,37 @@
+# Dependency directories
+node_modules/
+dist/
+.angular/
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Server specific
+server/node_modules/
+client/node_modules/
+
+# Production build
+client/dist/
+
+# Tmp files
+/tmp/

@@ -1,0 +1,20 @@
+<div class="booking-page-wrapper" [style.--bg-img]="backgroundImage">
+
+    <!-- Dynamic Hero Background -->
+    <div class="university-hero">
+        <div class="uni-hero-overlay"></div>
+        <div class="uni-hero-content">
+            <a routerLink="/" class="back-btn">
+                <i class="bi bi-arrow-right"></i> اختر جامعة أخرى
+            </a>
+            <h1>{{ university?.name }}</h1>
+            <p>احجز مكانك في الرحلة القادمة</p>
+        </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="booking-wrapper">
+        <app-booking-form [preselectedUniversity]="universityId"></app-booking-form>
+    </div>
+
+</div>

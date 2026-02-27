@@ -1,0 +1,16 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo-container" routerLink="/">
+            <img src="/logo.png" alt="دمنهور باص" class="logo-img">
+        </div>
+
+        <!-- Single Navigation Links Container -->
+        <div class="nav-links">
+            <a routerLink="/" class="nav-link" routerLinkActive="active"
+                [routerLinkActiveOptions]="{exact: true}">الحجز</a>
+            <a routerLink="/contact" class="nav-link" routerLinkActive="active">تواصل</a>
+            <a routerLink="/login" class="nav-link admin-link">لوحة التحكم</a>
+        </div>
+    </div>
+</nav>

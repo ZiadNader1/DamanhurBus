@@ -1,0 +1,130 @@
+.navbar {
+  background-color: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5px 25px;
+  min-height: 70px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+  transform: scale(1.02);
+}
+
+.logo-img {
+  width: 180px;
+  height: auto;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.nav-link.active {
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.admin-link {
+  color: #818cf8;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+}
+
+.admin-link:hover {
+  background-color: #4f46e5;
+  color: white;
+  border-color: transparent;
+}
+
+:host {
+  direction: rtl;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    padding: 10px 10px;
+    gap: 12px;
+  }
+
+  .logo-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .logo-img {
+    width: 150px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+    gap: 6px;
+    /* Force horizontal row for all 3 links */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    flex: 1;
+    /* Make links share space equally */
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    width: 130px;
+  }
+
+  .nav-links {
+    gap: 4px;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: 6px 4px;
+  }
+}

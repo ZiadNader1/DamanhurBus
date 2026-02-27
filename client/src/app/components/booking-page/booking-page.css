@@ -1,0 +1,97 @@
+.booking-page-wrapper {
+    min-height: 100vh;
+}
+
+/* University-specific hero background */
+.university-hero {
+    position: relative;
+    height: 55vh;
+    background-image: var(--bg-img);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.uni-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.uni-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    padding: 0 20px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.uni-hero-content h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.uni-hero-content p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Booking form section */
+.booking-wrapper {
+    position: relative;
+    z-index: 10;
+    margin-top: -80px;
+    padding-bottom: 80px;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .university-hero {
+        height: 45vh;
+    }
+
+    .uni-hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .booking-wrapper {
+        margin-top: -60px;
+    }
+}
