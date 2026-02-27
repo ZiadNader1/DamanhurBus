@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import html2canvas from 'html2canvas';
+import { API_URL } from '../../api-config';
 
 interface Booking {
     _id: string;
@@ -131,7 +132,7 @@ export class DashboardComponent implements OnInit {
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
         // Fetch Bookings
-        this.http.get<{ success: boolean, data: Booking[] }>('http://localhost:5000/api/booking', { headers })
+        this.http.get<{ success: boolean, data: Booking[] }>(`${API_URL}/api/booking`, { headers })
             .subscribe({
                 next: (res) => {
                     // ✅ Primary sort by order, then by date as fallback
@@ -143,7 +144,7 @@ export class DashboardComponent implements OnInit {
             });
 
         // Fetch Settings
-        this.http.get<{ success: boolean, data: UniversityConfig[] }>('http://localhost:5000/api/settings', { headers })
+        this.http.get<{ success: boolean, data: UniversityConfig[] }>(`${API_URL}/api/settings`, { headers })
             .subscribe({
                 next: (res) => this.universityConfigs.set(res.data),
                 error: () => { }
@@ -158,7 +159,7 @@ export class DashboardComponent implements OnInit {
         }
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-        this.http.put(`http://localhost:5000/api/settings/${config.universityId}`, config, { headers })
+        this.http.put(`${API_URL}/api/settings/${config.universityId}`, config, { headers })
             .subscribe({
                 next: () => {
                     alert('تم تحديث الإعدادات بنجاح');
@@ -272,7 +273,7 @@ export class DashboardComponent implements OnInit {
                 : this.editingBookingData.bookingDate
         };
 
-        this.http.put(`http://localhost:5000/api/booking/${bookingId}`, updatePayload, { headers })
+        this.http.put(`${API_URL}/api/booking/${bookingId}`, updatePayload, { headers })
             .subscribe({
                 next: () => {
                     alert('تم تعديل الحجز بنجاح');
@@ -297,7 +298,7 @@ export class DashboardComponent implements OnInit {
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
         const orders = this.bookings().map((b, i) => ({ id: b._id, order: i }));
 
-        this.http.put('http://localhost:5000/api/booking/reorder', { orders }, { headers })
+        this.http.put(`${API_URL}/api/booking/reorder`, { orders }, { headers })
             .subscribe({
                 next: () => { },
                 error: (err) => console.error('Failed to save order', err)
@@ -320,7 +321,7 @@ export class DashboardComponent implements OnInit {
     deleteBooking(id: string) {
         if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
 
-        this.http.delete(`http://localhost:5000/api/booking/${id}`, { headers: this.getHeaders() })
+        this.http.delete(`${API_URL}/api/booking/${id}`, { headers: this.getHeaders() })
             .subscribe({
                 next: () => {
                     this.fetchData();
@@ -340,7 +341,7 @@ export class DashboardComponent implements OnInit {
 
         if (!confirm(msg)) return;
 
-        this.http.post(`http://localhost:5000/api/booking/delete-bulk`,
+        this.http.post(`${API_URL}/api/booking/delete-bulk`,
             { university: uni, weekday: day },
             { headers: this.getHeaders() }
         ).subscribe({

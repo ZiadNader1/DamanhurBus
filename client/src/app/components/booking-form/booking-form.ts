@@ -2,6 +2,7 @@ import { Component, Input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../../api-config';
 
 @Component({
   selector: 'app-booking-form',
@@ -72,7 +73,7 @@ export class BookingForm implements OnInit {
   }
 
   fetchUniversitySettings(uniId: string) {
-    this.http.get<{ success: boolean, data: any }>(`http://localhost:5000/api/settings/${uniId}`)
+    this.http.get<{ success: boolean, data: any }>(`${API_URL}/api/settings/${uniId}`)
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
@@ -111,7 +112,7 @@ export class BookingForm implements OnInit {
     if (!this.validate()) return;
 
     this.loading.set(true);
-    this.http.post('http://localhost:5000/api/booking', this.formData)
+    this.http.post(`${API_URL}/api/booking`, this.formData)
       .subscribe({
         next: (res) => {
           this.loading.set(false);
