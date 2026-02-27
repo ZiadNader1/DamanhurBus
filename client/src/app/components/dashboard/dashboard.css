@@ -282,9 +282,11 @@ td {
 }
 
 /* Bus Header Style */
-.bus-header {
-    background: #1a365d !important;
-    /* Deep Blue Category */
+.bus-header td {
+    background: #1e3a8a !important;
+    padding: 0 !important;
+    height: 50px;
+    vertical-align: middle;
 }
 
 .bus-title {
@@ -295,6 +297,10 @@ td {
     text-align: right;
     direction: rtl;
     width: 100%;
+    position: relative;
+    z-index: 100;
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .bus-title span {
