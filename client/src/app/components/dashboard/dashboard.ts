@@ -369,8 +369,11 @@ export class DashboardComponent implements OnInit {
 
                 const busTitles = clonedDoc.querySelectorAll('.bus-title');
                 busTitles.forEach(el => {
-                    (el as HTMLElement).style.direction = 'rtl';
-                    (el as HTMLElement).style.textAlign = 'right';
+                    const htmlEl = el as HTMLElement;
+                    htmlEl.style.direction = 'rtl';
+                    htmlEl.style.textAlign = 'right';
+                    htmlEl.style.color = '#ffffff';
+                    htmlEl.style.display = 'block';
                 });
             }
         }).then(canvas => {

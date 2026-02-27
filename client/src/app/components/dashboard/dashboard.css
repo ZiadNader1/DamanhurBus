@@ -288,13 +288,18 @@ td {
 }
 
 .bus-title {
-    padding: 10px 15px;
+    padding: 12px 15px;
     font-weight: 700;
-    color: #fff;
-    font-size: 1.15rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    text-align: right;
+    direction: rtl;
+    width: 100%;
+}
+
+.bus-title span {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .bus-title .separator {
