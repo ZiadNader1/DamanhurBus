@@ -290,17 +290,21 @@ td {
 }
 
 .bus-title {
-    padding: 12px 15px;
-    font-weight: 700;
+    padding: 12px 20px;
+    font-weight: 800;
     color: #ffffff !important;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     text-align: right;
-    direction: rtl;
     width: 100%;
-    position: relative;
-    z-index: 100;
     white-space: nowrap;
-    overflow: visible;
+}
+
+@media (max-width: 768px) {
+    .bus-title {
+        text-align: center;
+        font-size: 1rem;
+        padding: 10px;
+    }
 }
 
 .bus-title span {
