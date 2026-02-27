@@ -1,6 +1,9 @@
-<div class="dashboard-wrapper">
+<div class="dashboard-wrapper" [class.sidebar-open]="isSidebarOpen">
     <!-- Sidebar -->
-    <aside class="dashboard-sidebar">
+    <aside class="dashboard-sidebar" [class.visible]="isSidebarOpen">
+        <div class="sidebar-close-mobile" (click)="isSidebarOpen = false">
+            <i class="bi bi-x-lg"></i>
+        </div>
         <div class="sidebar-header">
             <h3>لوحة التحكم</h3>
         </div>
@@ -17,7 +20,12 @@
     <!-- Main Content -->
     <main class="dashboard-main">
         <div class="main-header">
-            <h2>{{ activeTab === 'bookings' ? 'قائمة الحجوزات' : 'إعدادات الجامعات' }}</h2>
+            <div class="header-title-group">
+                <button class="mobile-menu-toggle" (click)="isSidebarOpen = !isSidebarOpen">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h2>{{ activeTab === 'bookings' ? 'قائمة الحجوزات' : 'إعدادات الجامعات' }}</h2>
+            </div>
             <div class="header-actions" *ngIf="activeTab === 'bookings'">
                 <div class="actions">
                     <!-- University Filter -->

@@ -42,6 +42,7 @@ interface GroupedBookings {
     styleUrl: './dashboard.css'
 })
 export class DashboardComponent implements OnInit {
+    isSidebarOpen = false;
     activeTab = 'bookings';
     bookings = signal<Booking[]>([]);
     universityConfigs = signal<UniversityConfig[]>([]);

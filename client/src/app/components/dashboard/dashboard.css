@@ -13,6 +13,18 @@
     padding: 30px 0;
     display: flex;
     flex-direction: column;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-close-mobile {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
 }
 
 .sidebar-header {
@@ -76,6 +88,23 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 35px;
+    gap: 20px;
+}
+
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #f59e0b;
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0;
 }
 
 .main-header h2 {
@@ -221,8 +250,9 @@
 .table-container {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
-    overflow: hidden;
+    overflow-x: auto;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -544,5 +574,82 @@ td {
 @media (max-width: 1024px) {
     .settings-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Base Responsive */
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(100%);
+        width: 280px;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .dashboard-sidebar.visible {
+        transform: translateX(0);
+    }
+
+    .sidebar-close-mobile {
+        display: block;
+    }
+
+    .dashboard-main {
+        padding: 20px;
+    }
+
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .filter-wrapper {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .toolbar-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    .main-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .filter-wrapper,
+    .toolbar-btn {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .delete-all-btn {
+        grid-column: span 2;
     }
 }
