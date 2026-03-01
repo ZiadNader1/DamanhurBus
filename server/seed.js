@@ -10,7 +10,7 @@ const universityData = [
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
         timeSlots: ['07:30 AM', '08:30 AM', '04:00 PM', '05:00 PM'],
         availableDays: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
-        destination: 'السكن الجامعي HQ'
+        destinations: ['السكن الجامعي HQ']
     },
     {
         universityId: 'alamein',
@@ -18,7 +18,7 @@ const universityData = [
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
         timeSlots: ['07:30 AM', '08:30 AM', '04:00 PM', '05:00 PM'],
         availableDays: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
-        destination: 'السكن الجامعي HQ'
+        destinations: ['السكن الجامعي HQ']
     },
     {
         universityId: 'menofia',
@@ -26,7 +26,7 @@ const universityData = [
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
         timeSlots: ['07:30 AM', '08:30 AM', '04:00 PM', '05:00 PM'],
         availableDays: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
-        destination: 'السكن الجامعي HQ'
+        destinations: ['السكن الجامعي HQ']
     },
     {
         universityId: 'damanhour-ahlia',
@@ -34,7 +34,7 @@ const universityData = [
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
         timeSlots: ['07:30 AM', '08:30 AM', '04:00 PM', '05:00 PM'],
         availableDays: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
-        destination: 'السكن الجامعي HQ'
+        destinations: ['السكن الجامعي HQ']
     }
 ];
 

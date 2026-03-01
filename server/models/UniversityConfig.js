@@ -29,9 +29,9 @@ const universityConfigSchema = new mongoose.Schema({
         type: [String],
         default: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس']
     },
-    destination: {
-        type: String,
-        default: 'السكن الجامعي HQ'
+    destinations: {
+        type: [String],
+        default: ['السكن الجامعي HQ']
     },
     updatedAt: {
         type: Date,

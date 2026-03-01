@@ -24,7 +24,7 @@ interface UniversityConfig {
     pickupLocations: string[];
     timeSlots: string[];
     availableDays: string[];
-    destination: string;
+    destinations: string[];
 }
 
 interface GroupedBookings {
@@ -202,6 +202,18 @@ export class DashboardComponent implements OnInit {
 
     removeTime(config: UniversityConfig, index: number) {
         config.timeSlots.splice(index, 1);
+    }
+
+    addDestination(config: UniversityConfig) {
+        const dest = prompt('أدخل الوجهة الجديدة:');
+        if (dest) {
+            if (!config.destinations) config.destinations = [];
+            config.destinations.push(dest);
+        }
+    }
+
+    removeDestination(config: UniversityConfig, index: number) {
+        config.destinations.splice(index, 1);
     }
 
     moveBooking(bookingId: string, direction: 'up' | 'down') {

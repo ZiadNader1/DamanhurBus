@@ -194,8 +194,14 @@
                     </div>
 
                     <div class="setting-section">
-                        <h4><i class="bi bi-geo-fill"></i> الوجهة</h4>
-                        <input type="text" [(ngModel)]="config.destination" class="dest-input">
+                        <h4><i class="bi bi-geo-fill"></i> الوجهات</h4>
+                        <div class="tag-list">
+                            <span class="tag" *ngFor="let dest of config.destinations; let i = index">
+                                {{ dest }}
+                                <i class="bi bi-x" (click)="removeDestination(config, i)"></i>
+                            </span>
+                            <button class="add-tag" (click)="addDestination(config)">+ إضافة</button>
+                        </div>
                     </div>
 
                     <button class="save-btn" (click)="updateSetting(config)">حفظ التغييرات</button>

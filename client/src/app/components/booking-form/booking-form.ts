@@ -80,8 +80,8 @@ export class BookingForm implements OnInit {
             this.timeSlots = res.data.timeSlots || [];
             this.pickupLocations = res.data.pickupLocations || [];
             this.weekdays = res.data.availableDays || ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
-            this.formData.departureTo = res.data.destination || 'السكن الجامعي HQ';
-            this.destinations = [this.formData.departureTo];
+            this.destinations = res.data.destinations || (res.data.destination ? [res.data.destination] : ['السكن الجامعي HQ']);
+            this.formData.departureTo = this.destinations.length > 0 ? this.destinations[0] : '';
           }
         },
         error: (err) => console.error('Failed to load settings', err)
