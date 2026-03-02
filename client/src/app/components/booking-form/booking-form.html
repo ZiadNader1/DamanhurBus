@@ -62,7 +62,7 @@
             <div class="form-group" [class.has-error]="errors().fullName">
                 <label for="fullName"><i class="bi bi-person-badge"></i> الاسم المكتمل</label>
                 <input type="text" id="fullName" name="fullName" [(ngModel)]="formData.fullName"
-                    placeholder="أدخل اسمك كما هو في البطاقة" (input)="validate()">
+                    placeholder="أدخل اسمك " (input)="validate()">
                 <span class="error-msg" *ngIf="errors().fullName">{{errors().fullName}}</span>
             </div>
 
