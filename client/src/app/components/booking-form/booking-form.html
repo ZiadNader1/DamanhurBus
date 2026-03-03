@@ -7,23 +7,31 @@
 
         <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
-            <!-- Weekday -->
+            <!-- Weekday (Chips) -->
             <div class="form-group" [class.has-error]="errors().weekday">
-                <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
-                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()">
-                    <option value="" disabled selected>{{ lang.t('form_day_ph') }}</option>
-                    <option *ngFor="let day of weekdays" [value]="day">{{day}}</option>
-                </select>
+                <label><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
+                <div class="selection-grid">
+                    <div *ngFor="let day of directionalDays" class="chip"
+                        [class.selected]="formData.weekday === day.name" (click)="selectDay(day)">
+                        <span class="time-val">{{ day.name.split(' ')[0] }}</span>
+                        <span class="direction-badge">{{ day.name.split(' ')[1] }}</span>
+                    </div>
+                </div>
                 <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
             </div>
 
-            <!-- Time Slot -->
+            <!-- Time Slot (Chips) -->
             <div class="form-group" [class.has-error]="errors().timeSlot">
-                <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
-                <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()">
-                    <option value="" disabled selected>{{ lang.t('form_time_ph') }}</option>
-                    <option *ngFor="let time of timeSlots" [value]="time">{{time}}</option>
-                </select>
+                <label><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
+                <div class="selection-grid time-grid">
+                    <div *ngFor="let time of timeSlots" class="chip" [class.selected]="formData.timeSlot === time"
+                        (click)="selectTime(time)">
+                        <span class="time-val">{{ time }}</span>
+                    </div>
+                    <div *ngIf="timeSlots.length === 0" class="no-times">
+                        {{ lang.t('form_day_ph') }}
+                    </div>
+                </div>
                 <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
             </div>
 

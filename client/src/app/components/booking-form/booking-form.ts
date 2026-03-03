@@ -58,7 +58,11 @@ export class BookingForm implements OnInit {
     'الجامعة المصرية اليابانية': 'ejust',
     'جامعة العلمين الدولية': 'alamein',
     'جامعة المنوفية الأهلية': 'menofia',
-    'جامعة دمنهور الأهلية': 'damanhour-ahlia'
+    'جامعة دمنهور الأهلية': 'damanhour-ahlia',
+    'E-JUST': 'ejust',
+    'Alamein International University': 'alamein',
+    'Menofia Ahlia University': 'menofia',
+    'Damanhour Ahlia University': 'damanhour-ahlia'
   };
 
   ngOnInit() {
@@ -120,6 +124,16 @@ export class BookingForm implements OnInit {
     this.validate();
   }
 
+  selectDay(day: any) {
+    this.formData.weekday = day.name;
+    this.onDayChange();
+  }
+
+  selectTime(time: string) {
+    this.formData.timeSlot = time;
+    this.validate();
+  }
+
   validate() {
     const newErrors: any = {};
     if (!this.formData.weekday) newErrors.weekday = this.lang.t('err_day');
@@ -153,7 +167,7 @@ export class BookingForm implements OnInit {
         },
         error: (err) => {
           this.loading.set(false);
-          alert('حدث خطأ أثناء الحجز. يرجى المحاولة مرة أخرى.');
+          alert(this.lang.isArabic() ? 'حدث خطأ أثناء الحجز. يرجى المحاولة مرة أخرى.' : 'An error occurred during booking. Please try again.');
         }
       });
   }

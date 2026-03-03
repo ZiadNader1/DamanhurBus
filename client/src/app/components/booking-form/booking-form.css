@@ -158,3 +158,56 @@ select:focus {
         font-size: 1.6rem;
     }
 }
+
+/* Chip Selection Styles */
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.chip {
+    padding: 12px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #e2e8f0;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(245, 158, 11, 0.5);
+}
+
+.chip.selected {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #f59e0b;
+    color: white;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.chip .direction-badge {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+.chip .time-val {
+    font-size: 1rem;
+}
+
+.time-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
