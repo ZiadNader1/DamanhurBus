@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { API_URL } from '../../api-config';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -51,7 +52,7 @@ export class BookingForm implements OnInit {
     'جامعة دمنهور الأهلية'
   ];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, public lang: TranslationService) { }
 
   universityIds: Record<string, string> = {
     'الجامعة المصرية اليابانية': 'ejust',
@@ -121,18 +122,18 @@ export class BookingForm implements OnInit {
 
   validate() {
     const newErrors: any = {};
-    if (!this.formData.weekday) newErrors.weekday = 'يرجى اختيار اليوم';
-    if (!this.formData.timeSlot) newErrors.timeSlot = 'يرجى اختيار الموعد';
-    if (!this.formData.university) newErrors.university = 'يرجى اختيار الجامعة';
-    if (!this.formData.departureFrom) newErrors.departureFrom = 'يرجى اختيار مكان التحرك';
-    if (!this.formData.departureTo) newErrors.departureTo = 'يرجى اختيار الوجهة';
-    if (!this.formData.fullName) newErrors.fullName = 'يرجى إدخال الاسم بالكامل';
+    if (!this.formData.weekday) newErrors.weekday = this.lang.t('err_day');
+    if (!this.formData.timeSlot) newErrors.timeSlot = this.lang.t('err_time');
+    if (!this.formData.university) newErrors.university = this.lang.t('err_university');
+    if (!this.formData.departureFrom) newErrors.departureFrom = this.lang.t('err_from');
+    if (!this.formData.departureTo) newErrors.departureTo = this.lang.t('err_to');
+    if (!this.formData.fullName) newErrors.fullName = this.lang.t('err_name');
 
     const phoneRegex = /^(01)[0-2,5]{1}[0-9]{8}$/;
     if (!this.formData.phoneNumber) {
-      newErrors.phoneNumber = 'يرجى إدخال رقم الهاتف';
+      newErrors.phoneNumber = this.lang.t('err_phone');
     } else if (!phoneRegex.test(this.formData.phoneNumber)) {
-      newErrors.phoneNumber = 'يرجى إدخال رقم هاتف مصري صحيح';
+      newErrors.phoneNumber = this.lang.t('err_phone_invalid');
     }
 
     this.errors.set(newErrors);

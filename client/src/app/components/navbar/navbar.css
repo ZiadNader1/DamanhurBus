@@ -78,6 +78,27 @@
   direction: rtl;
 }
 
+/* Language Toggle */
+.lang-toggle {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.lang-toggle:hover {
+  background: #f59e0b;
+  color: #0f172a;
+  border-color: #f59e0b;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .nav-container {

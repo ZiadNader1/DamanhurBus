@@ -1,8 +1,8 @@
 <div class="contact-wrapper">
     <div class="contact-card">
         <header class="contact-header">
-            <h1>تواصل معنا</h1>
-            <p>نحن هنا للمساعدة في أي استفسار حول رحلتك</p>
+            <h1>{{ lang.t('contact_title') }}</h1>
+            <p>{{ lang.t('contact_subtitle') }}</p>
         </header>
 
         <div class="contact-content">
@@ -11,17 +11,17 @@
                 <div class="icon-box">
                     <i class="bi bi-whatsapp"></i>
                 </div>
-                <h3>انضم لمجموعة الواتساب</h3>
-                <p>كن أول من يعرف بمواعيد الرحلات الجديدة والتحديثات</p>
+                <h3>{{ lang.t('contact_whatsapp') }}</h3>
+                <p>{{ lang.t('contact_whatsapp_sub') }}</p>
                 <a [href]="whatsappGroupLink" target="_blank" class="contact-btn whatsapp">
-                    الانضمام الآن
+                    {{ lang.t('contact_join') }}
                 </a>
             </div>
         </div>
 
         <footer class="contact-footer">
             <a routerLink="/" class="back-link">
-                <i class="bi bi-arrow-right"></i> العودة للرئيسية
+                <i class="bi bi-arrow-right"></i> {{ lang.t('contact_back') }}
             </a>
         </footer>
     </div>

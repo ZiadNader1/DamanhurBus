@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import html2canvas from 'html2canvas';
 import { API_URL } from '../../api-config';
+import { TranslationService } from '../../services/translation.service';
 
 interface Booking {
     _id: string;
@@ -121,7 +122,7 @@ export class DashboardComponent implements OnInit {
         return finalGroups;
     });
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, public lang: TranslationService) { }
 
     ngOnInit() {
         this.fetchData();
@@ -198,11 +199,11 @@ export class DashboardComponent implements OnInit {
 
     addSpecificTime(config: UniversityConfig, dayId: string, time24: string) {
         if (!dayId) {
-            alert('يرجى اختيار اليوم');
+            alert(this.lang.t('err_day'));
             return;
         }
         if (!time24) {
-            alert('يرجى اختيار الوقت');
+            alert(this.lang.t('err_time'));
             return;
         }
 
@@ -232,7 +233,7 @@ export class DashboardComponent implements OnInit {
     }
 
     addDestination(config: UniversityConfig) {
-        const dest = prompt('أدخل الوجهة الجديدة:');
+        const dest = prompt(this.lang.isArabic() ? 'أدخل الوجهة الجديدة:' : 'Enter new destination:');
         if (dest) {
             if (!config.destinations) config.destinations = [];
             config.destinations.push(dest);
@@ -364,7 +365,7 @@ export class DashboardComponent implements OnInit {
     }
 
     deleteBooking(id: string) {
-        if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
+        if (!confirm(this.lang.isArabic() ? 'هل أنت متأكد من حذف هذا الحجز؟' : 'Are you sure you want to delete this booking?')) return;
 
         this.http.delete(`${API_URL}/api/booking/${id}`, { headers: this.getHeaders() })
             .subscribe({

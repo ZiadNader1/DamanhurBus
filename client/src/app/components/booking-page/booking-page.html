@@ -5,10 +5,11 @@
         <div class="uni-hero-overlay"></div>
         <div class="uni-hero-content">
             <a routerLink="/" class="back-btn">
-                <i class="bi bi-arrow-right"></i> اختر جامعة أخرى
+                <i class="bi" [ngClass]="lang.isArabic() ? 'bi-arrow-right' : 'bi-arrow-left'"></i> {{
+                lang.t('page_back_uni') }}
             </a>
-            <h1>{{ university?.name }}</h1>
-            <p>احجز مكانك في الرحلة القادمة</p>
+            <h1>{{ lang.isArabic() ? university?.name : university?.nameEn }}</h1>
+            <p>{{ lang.t('page_booking_sub') }}</p>
         </div>
     </div>
 

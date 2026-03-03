@@ -5,12 +5,17 @@
             <img src="/logo.png" alt="دمنهور باص" class="logo-img">
         </div>
 
-        <!-- Single Navigation Links Container -->
+        <!-- Navigation Links -->
         <div class="nav-links">
-            <a routerLink="/" class="nav-link" routerLinkActive="active"
-                [routerLinkActiveOptions]="{exact: true}">الحجز</a>
-            <a routerLink="/contact" class="nav-link" routerLinkActive="active">تواصل</a>
-            <a routerLink="/login" class="nav-link admin-link">لوحة التحكم</a>
+            <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{
+                lang.t('nav_booking') }}</a>
+            <a routerLink="/contact" class="nav-link" routerLinkActive="active">{{ lang.t('nav_contact') }}</a>
+            <a routerLink="/login" class="nav-link admin-link">{{ lang.t('nav_admin') }}</a>
+
+            <!-- Language Toggle -->
+            <button class="lang-toggle" (click)="lang.toggle()">
+                🌐 {{ lang.t('lang_toggle') }}
+            </button>
         </div>
     </div>
 </nav>

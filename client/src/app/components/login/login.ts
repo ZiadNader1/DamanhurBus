@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class Login {
   loading = false;
   errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router, public lang: TranslationService) {
     // Auto redirect if already logged in!
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/admin/dashboard']);
@@ -26,7 +27,7 @@ export class Login {
 
   onLogin() {
     if (!this.email || !this.password) {
-      this.errorMessage = 'يرجى إدخال جميع البيانات';
+      this.errorMessage = this.lang.t('login_err_empty');
       return;
     }
 
@@ -41,9 +42,9 @@ export class Login {
         error: (err) => {
           this.loading = false;
           if (err.status === 0) {
-            this.errorMessage = 'فشل الاتصال بالخادم. تأكد من تشغيل الـ Backend';
+            this.errorMessage = this.lang.t('login_err_server');
           } else {
-            this.errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+            this.errorMessage = this.lang.t('login_err_wrong');
           }
         }
       });

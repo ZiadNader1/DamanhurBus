@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
     selector: 'app-university-select',
@@ -38,7 +39,7 @@ export class UniversitySelectComponent {
         }
     ];
 
-    constructor(private router: Router) { }
+    constructor(private router: Router, public lang: TranslationService) { }
 
     goToBooking(universityId: string) {
         this.router.navigate(['/booking', universityId]);

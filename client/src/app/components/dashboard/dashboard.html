@@ -5,14 +5,14 @@
             <i class="bi bi-x-lg"></i>
         </div>
         <div class="sidebar-header">
-            <h3>لوحة التحكم</h3>
+            <h3>{{ lang.t('dash_title') }}</h3>
         </div>
         <nav class="sidebar-nav">
             <button [class.active]="activeTab === 'bookings'" (click)="activeTab = 'bookings'">
-                <i class="bi bi-people"></i> الحجوزات
+                <i class="bi bi-people"></i> {{ lang.t('dash_bookings') }}
             </button>
             <button [class.active]="activeTab === 'settings'" (click)="activeTab = 'settings'">
-                <i class="bi bi-gear"></i> الإعدادات
+                <i class="bi bi-gear"></i> {{ lang.t('dash_settings') }}
             </button>
         </nav>
     </aside>
@@ -24,7 +24,7 @@
                 <button class="mobile-menu-toggle" (click)="isSidebarOpen = !isSidebarOpen">
                     <i class="bi bi-list"></i>
                 </button>
-                <h2>{{ activeTab === 'bookings' ? 'قائمة الحجوزات' : 'إعدادات الجامعات' }}</h2>
+                <h2>{{ activeTab === 'bookings' ? lang.t('dash_list_title') : lang.t('dash_uni_settings') }}</h2>
             </div>
             <div class="header-actions" *ngIf="activeTab === 'bookings'">
                 <div class="actions">
@@ -32,7 +32,7 @@
                     <div class="filter-wrapper">
                         <i class="bi bi-mortarboard filter-icon"></i>
                         <select class="uni-select" [ngModel]="selectedUni()" (ngModelChange)="onUniChange($event)">
-                            <option value="all">كل الجامعات</option>
+                            <option value="all">{{ lang.t('dash_all_unis') }}</option>
                             <option *ngFor="let config of universityConfigs()" [value]="config.universityName">
                                 {{ config.universityName }}
                             </option>
@@ -43,22 +43,22 @@
                     <div class="filter-wrapper" *ngIf="availableDaysForFilter().length > 0">
                         <i class="bi bi-calendar-week filter-icon"></i>
                         <select class="uni-select" [ngModel]="selectedDay()" (ngModelChange)="onDayChange($event)">
-                            <option value="all">كل الأيام</option>
+                            <option value="all">{{ lang.t('dash_all_days') }}</option>
                             <option *ngFor="let day of availableDaysForFilter()" [value]="day">{{ day }}</option>
                         </select>
                     </div>
 
                     <button class="toolbar-btn refresh-btn" (click)="fetchData()">
                         <i class="bi bi-arrow-clockwise"></i>
-                        <span>تحديث</span>
+                        <span>{{ lang.t('dash_refresh') }}</span>
                     </button>
                     <button class="toolbar-btn png-btn" (click)="exportToPNG()">
                         <i class="bi bi-image"></i>
-                        <span>تصدير PNG</span>
+                        <span>{{ lang.t('dash_export_png') }}</span>
                     </button>
                     <button class="toolbar-btn delete-all-btn" (click)="clearList()">
                         <i class="bi bi-trash-fill"></i>
-                        <span>مسح القائمة</span>
+                        <span>{{ lang.t('dash_clear_list') }}</span>
                     </button>
                 </div>
             </div>
@@ -67,23 +67,23 @@
         <!-- Bookings Content -->
         <div class="content-body" *ngIf="activeTab === 'bookings'">
             <div class="table-container" id="printable-area">
-                <table dir="rtl">
+                <table [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>الاسم</th>
-                            <th>الموعد</th>
-                            <th>التحرك</th>
-                            <th>الهاتف</th>
-                            <th class="no-print">التحكم</th>
+                            <th>{{ lang.t('dash_th_name') }}</th>
+                            <th>{{ lang.t('dash_th_time') }}</th>
+                            <th>{{ lang.t('dash_th_pickup') }}</th>
+                            <th>{{ lang.t('dash_th_phone') }}</th>
+                            <th class="no-print">{{ lang.t('dash_th_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody *ngFor="let group of groupedBookings()">
                         <!-- Bus Category Header -->
                         <tr class="bus-header">
                             <td colspan="6">
-                                <div class="bus-title" dir="rtl">
-                                    <span>باص {{ group.busNumber }}</span>
+                                <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
+                                    <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
                                     <span class="separator"> - </span>
                                     <span>{{ group.weekday }}</span>
                                     <span class="separator"> - </span>
@@ -120,28 +120,23 @@
                             <td class="no-print">
                                 <div class="action-btns">
                                     <ng-container *ngIf="editingBookingId !== booking._id">
-                                        <button class="btn-icon" (click)="moveBooking(booking._id, 'up')"
-                                            title="تحريك لأعلى">
-                                            <i class="bi bi-arrow-up"></i>
-                                        </button>
-                                        <button class="btn-icon" (click)="moveBooking(booking._id, 'down')"
-                                            title="تحريك لأسفل">
-                                            <i class="bi bi-arrow-down"></i>
-                                        </button>
-                                        <button class="btn-icon edit-btn" (click)="startEditing(booking)" title="تعديل">
+                                        <button class="btn-icon edit-btn" (click)="startEditing(booking)"
+                                            [title]="lang.isArabic() ? 'تعديل' : 'Edit'">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
                                         <button class="btn-icon delete-btn" (click)="deleteBooking(booking._id)"
-                                            title="حذف">
+                                            [title]="lang.isArabic() ? 'حذف' : 'Delete'">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </ng-container>
 
                                     <ng-container *ngIf="editingBookingId === booking._id">
-                                        <button class="btn-icon save-btn" (click)="saveEdit(booking._id)" title="حفظ">
+                                        <button class="btn-icon save-btn" (click)="saveEdit(booking._id)"
+                                            [title]="lang.isArabic() ? 'حفظ' : 'Save'">
                                             <i class="bi bi-check-lg"></i>
                                         </button>
-                                        <button class="btn-icon cancel-btn" (click)="cancelEditing()" title="إلغاء">
+                                        <button class="btn-icon cancel-btn" (click)="cancelEditing()"
+                                            [title]="lang.isArabic() ? 'إلغاء' : 'Cancel'">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
                                     </ng-container>
@@ -155,36 +150,35 @@
 
         <!-- Settings Content -->
         <div class="content-body" *ngIf="activeTab === 'settings'">
-            <!-- ... Settings content remains the same ... -->
             <div class="settings-grid">
                 <div class="uni-config-card" *ngFor="let config of universityConfigs()">
                     <h3>{{ config.universityName }}</h3>
 
                     <div class="setting-section">
-                        <h4>نقاط التحرك</h4>
+                        <h4>{{ lang.t('dash_location') }}</h4>
                         <div class="tag-list">
                             <span class="tag" *ngFor="let loc of config.pickupLocations; let i = index">
                                 {{ loc }}
                                 <i class="bi bi-x" (click)="removeLocation(config, i)"></i>
                             </span>
-                            <button class="add-tag" (click)="addLocation(config)">+ إضافة</button>
+                            <button class="add-tag" (click)="addLocation(config)">+ {{ lang.t('dash_add') }}</button>
                         </div>
                     </div>
 
                     <div class="setting-section">
-                        <h4>أيام ومواعيد العمل (ذهاب وعودة)</h4>
+                        <h4>{{ lang.t('dash_directional') }}</h4>
                         <div class="add-time-form"
                             style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px;">
                             <select #daySelect class="dest-input" style="flex: 1; min-width: 200px; padding: 12px;">
-                                <option value="" disabled selected>اختر اليوم والاتجاه</option>
+                                <option value="" disabled selected>{{ lang.t('dash_choose_day') }}</option>
                                 <option *ngFor="let day of config.directionalDays" [value]="day.id">{{ day.name }}
                                 </option>
                             </select>
                             <input type="time" #timeInput class="dest-input" style="width: auto; padding: 12px;">
                             <button
                                 style="background: #2563eb; color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;"
-                                (click)="addSpecificTime(config, daySelect.value, timeInput.value); daySelect.value=''; timeInput.value=''">إضافة
-                                ميعاد</button>
+                                (click)="addSpecificTime(config, daySelect.value, timeInput.value); daySelect.value=''; timeInput.value=''">{{
+                                lang.t('dash_add_time') }}</button>
                         </div>
 
                         <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -206,17 +200,17 @@
                     </div>
 
                     <div class="setting-section">
-                        <h4>الوجهات</h4>
+                        <h4>{{ lang.t('dash_destinations') }}</h4>
                         <div class="tag-list">
                             <span class="tag" *ngFor="let dest of config.destinations; let i = index">
                                 {{ dest }}
                                 <i class="bi bi-x" (click)="removeDestination(config, i)"></i>
                             </span>
-                            <button class="add-tag" (click)="addDestination(config)">+ إضافة</button>
+                            <button class="add-tag" (click)="addDestination(config)">+ {{ lang.t('dash_add') }}</button>
                         </div>
                     </div>
 
-                    <button class="save-btn" (click)="updateSetting(config)">حفظ التغييرات</button>
+                    <button class="save-btn" (click)="updateSetting(config)">{{ lang.t('dash_save') }}</button>
                 </div>
             </div>
         </div>

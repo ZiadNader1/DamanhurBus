@@ -1,17 +1,17 @@
 <div class="booking-container">
     <div class="form-card">
         <div class="form-header">
-            <h2>حجز رحلة جديدة</h2>
-            <p>سجل بياناتك في خطوات بسيطة لضمان مكانك في الرحلة القادمة.</p>
+            <h2>{{ lang.t('form_title') }}</h2>
+            <p>{{ lang.t('form_subtitle') }}</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
             <!-- Weekday -->
             <div class="form-group" [class.has-error]="errors().weekday">
-                <label for="weekday"><i class="bi bi-calendar3"></i> اليوم والاتجاه</label>
+                <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
                 <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()">
-                    <option value="" disabled selected>اختر اليوم</option>
+                    <option value="" disabled selected>{{ lang.t('form_day_ph') }}</option>
                     <option *ngFor="let day of weekdays" [value]="day">{{day}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
@@ -19,9 +19,9 @@
 
             <!-- Time Slot -->
             <div class="form-group" [class.has-error]="errors().timeSlot">
-                <label for="timeSlot"><i class="bi bi-clock"></i> موعد الرحلة</label>
+                <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
                 <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()">
-                    <option value="" disabled selected>اختر الموعد المناسب</option>
+                    <option value="" disabled selected>{{ lang.t('form_time_ph') }}</option>
                     <option *ngFor="let time of timeSlots" [value]="time">{{time}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
@@ -29,10 +29,10 @@
 
             <!-- University -->
             <div class="form-group" [class.has-error]="errors().university">
-                <label for="university"><i class="bi bi-building"></i> الجامعة</label>
+                <label for="university"><i class="bi bi-building"></i> {{ lang.t('form_university') }}</label>
                 <select id="university" name="university" [(ngModel)]="formData.university"
                     (change)="onUniversityChange()" [disabled]="preselectedUniversity ? true : false">
-                    <option value="" disabled selected>اختر جامعتك</option>
+                    <option value="" disabled selected>{{ lang.t('form_university_ph') }}</option>
                     <option *ngFor="let uni of universities" [value]="uni">{{uni}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
@@ -40,10 +40,10 @@
 
             <!-- Departure From -->
             <div class="form-group" [class.has-error]="errors().departureFrom">
-                <label for="departureFrom"><i class="bi bi-geo-alt"></i> نقطة التحرك (من)</label>
+                <label for="departureFrom"><i class="bi bi-geo-alt"></i> {{ lang.t('form_from') }}</label>
                 <select id="departureFrom" name="departureFrom" [(ngModel)]="formData.departureFrom"
                     (change)="validate()">
-                    <option value="" disabled selected>حدد المحطة</option>
+                    <option value="" disabled selected>{{ lang.t('form_from_ph') }}</option>
                     <option *ngFor="let loc of pickupLocations" [value]="loc">{{loc}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().departureFrom">{{errors().departureFrom}}</span>
@@ -51,7 +51,7 @@
 
             <!-- Departure To -->
             <div class="form-group" [class.has-error]="errors().departureTo">
-                <label for="departureTo"><i class="bi bi-geo-alt-fill"></i> الوجهة (إلى)</label>
+                <label for="departureTo"><i class="bi bi-geo-alt-fill"></i> {{ lang.t('form_to') }}</label>
                 <select id="departureTo" name="departureTo" [(ngModel)]="formData.departureTo" (change)="validate()">
                     <option *ngFor="let loc of destinations" [value]="loc">{{loc}}</option>
                 </select>
@@ -60,26 +60,26 @@
 
             <!-- Full Name -->
             <div class="form-group" [class.has-error]="errors().fullName">
-                <label for="fullName"><i class="bi bi-person-badge"></i> الاسم المكتمل</label>
+                <label for="fullName"><i class="bi bi-person-badge"></i> {{ lang.t('form_name') }}</label>
                 <input type="text" id="fullName" name="fullName" [(ngModel)]="formData.fullName"
-                    placeholder="أدخل اسمك " (input)="validate()">
+                    [placeholder]="lang.t('form_name_ph')" (input)="validate()">
                 <span class="error-msg" *ngIf="errors().fullName">{{errors().fullName}}</span>
             </div>
 
             <!-- Phone Number -->
             <div class="form-group" [class.has-error]="errors().phoneNumber">
-                <label for="phoneNumber"><i class="bi bi-telephone"></i> رقم الهاتف (WhatsApp)</label>
+                <label for="phoneNumber"><i class="bi bi-telephone"></i> {{ lang.t('form_phone') }}</label>
                 <input type="tel" id="phoneNumber" name="phoneNumber" [(ngModel)]="formData.phoneNumber"
                     placeholder="01xxxxxxxxx" (input)="validate()">
                 <span class="error-msg" *ngIf="errors().phoneNumber">{{errors().phoneNumber}}</span>
             </div>
 
             <button type="submit" class="submit-btn" [disabled]="loading()">
-                {{ loading() ? 'جاري الحجز...' : ' تأكيد الحجز الآن' }}
+                {{ loading() ? lang.t('form_loading') : lang.t('form_submit') }}
             </button>
 
             <div class="success-alert" *ngIf="success()">
-                تم الحجز بنجاح! سنتواصل معك قريباً.
+                {{ lang.t('form_success') }}
             </div>
 
         </form>

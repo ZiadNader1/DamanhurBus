@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
     selector: 'app-contact',
@@ -12,6 +13,8 @@ import { RouterLink } from '@angular/router';
 export class ContactComponent {
     whatsappGroupLink = 'https://chat.whatsapp.com/KWne4THix6D1UjAB3mSba6';
     phoneNumber = '01067465956';
+
+    constructor(public lang: TranslationService) { }
 
     openWhatsApp() {
         window.open(this.whatsappGroupLink, '_blank');

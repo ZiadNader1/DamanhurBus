@@ -3,9 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { BookingForm } from '../booking-form/booking-form';
+import { TranslationService } from '../../services/translation.service';
 
 interface UniversityConfig {
     name: string;
+    nameEn: string;
     image: string;
 }
 
@@ -23,23 +25,27 @@ export class BookingPageComponent implements OnInit {
     universities: Record<string, UniversityConfig> = {
         ejust: {
             name: 'الجامعة المصرية اليابانية',
+            nameEn: 'E-JUST',
             image: '/ejust-form.png'
         },
         alamein: {
             name: 'جامعة العلمين الدولية',
+            nameEn: 'Alamein International University',
             image: '/alamein-form.png'
         },
         menofia: {
             name: 'جامعة المنوفية الأهلية',
+            nameEn: 'Menofia Ahlia University',
             image: '/menofia-form.png'
         },
         'damanhour-ahlia': {
             name: 'جامعة دمنهور الأهلية',
+            nameEn: 'Damanhour Ahlia University',
             image: '/damanhour-ahlia-form.png'
         }
     };
 
-    constructor(private route: ActivatedRoute) { }
+    constructor(private route: ActivatedRoute, public lang: TranslationService) { }
 
     ngOnInit() {
         this.universityId = this.route.snapshot.paramMap.get('id') || '';

@@ -2,8 +2,8 @@
 
     <!-- Hero / Intro -->
     <div class="hero-section">
-        <h1>دمنهور باص</h1>
-        <p>محطتك الأولى للجامعة —اختر جامعتك لحجز رحلتك</p>
+        <h1>{{ lang.t('hero_title') }}</h1>
+        <p>{{ lang.t('hero_subtitle') }}</p>
     </div>
 
     <!-- University Cards Grid -->
@@ -12,11 +12,11 @@
             <div class="uni-card-img" [style.background-image]="'url(' + uni.image + ')'"></div>
             <div class="uni-card-overlay"></div>
             <div class="uni-card-info">
-                <strong>{{ uni.name }}</strong>
-                <span>{{ uni.nameEn }}</span>
+                <strong>{{ lang.isArabic() ? uni.name : uni.nameEn }}</strong>
+                <span>{{ lang.isArabic() ? uni.nameEn : uni.name }}</span>
             </div>
             <div class="uni-card-btn">
-                <span>احجز الآن</span>
+                <span>{{ lang.t('book_now') }}</span>
                 <i class="bi bi-arrow-left"></i>
             </div>
         </div>
