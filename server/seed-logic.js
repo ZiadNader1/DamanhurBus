@@ -44,7 +44,7 @@ const universityData = [
             { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
             { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
         ],
-        destinations: ['السكن الجامعي HQ']
+        destinations: ['جامعة العلمين الدولية']
     },
     {
         universityId: 'menofia',
@@ -98,11 +98,13 @@ module.exports = async () => {
 
         // 1. Seed University Configs
         for (const data of universityData) {
-            await UniversityConfig.findOneAndUpdate(
-                { universityId: data.universityId },
-                data,
-                { upsert: true, new: true }
-            );
+            const exists = await UniversityConfig.findOne({ universityId: data.universityId });
+            if (!exists) {
+                await UniversityConfig.create(data);
+                console.log(`✅ Seeded ${data.universityId}`);
+            } else {
+                console.log(`ℹ️ ${data.universityId} exists, skipping sync to maintain persistence.`);
+            }
         }
 
         // 2. Seed Admin User
