@@ -172,24 +172,23 @@
                     </div>
 
                     <div class="setting-section">
-                        <h4><i class="bi bi-calendar-event"></i> أيام العمل</h4>
-                        <div class="tag-list">
-                            <span class="tag" *ngFor="let day of config.availableDays; let i = index">
-                                {{ day }}
-                                <i class="bi bi-x" (click)="removeDay(config, i)"></i>
-                            </span>
-                            <button class="add-tag" (click)="addDay(config)">+ إضافة</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-section">
-                        <h4><i class="bi bi-clock"></i> المواعيد</h4>
-                        <div class="tag-list">
-                            <span class="tag" *ngFor="let time of config.timeSlots; let i = index">
-                                {{ time }}
-                                <i class="bi bi-x" (click)="removeTime(config, i)"></i>
-                            </span>
-                            <button class="add-tag" (click)="addTime(config)">+ إضافة</button>
+                        <h4><i class="bi bi-calendar-event"></i> أيام ومواعيد العمل (ذهاب وعودة)</h4>
+                        <div class="days-grid">
+                            <div class="day-card" *ngFor="let day of config.directionalDays"
+                                [class.active-day]="day.active">
+                                <div class="day-header" (click)="toggleDay(day)">
+                                    <input type="checkbox" [checked]="day.active"
+                                        (click)="$event.stopPropagation(); toggleDay(day)">
+                                    <span class="day-name">{{ day.name }}</span>
+                                </div>
+                                <div class="tag-list time-slots" *ngIf="day.active">
+                                    <span class="tag time-tag" *ngFor="let time of day.times; let i = index">
+                                        {{ time }}
+                                        <i class="bi bi-x" (click)="removeTime(day, i)"></i>
+                                    </span>
+                                    <button class="add-tag" (click)="addTime(day)">+ إضافة ميعاد</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

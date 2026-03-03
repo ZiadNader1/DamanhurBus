@@ -9,8 +9,8 @@
 
             <!-- Weekday -->
             <div class="form-group" [class.has-error]="errors().weekday">
-                <label for="weekday"><i class="bi bi-calendar3"></i> اليوم</label>
-                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="validate()">
+                <label for="weekday"><i class="bi bi-calendar3"></i> اليوم والاتجاه</label>
+                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()">
                     <option value="" disabled selected>اختر اليوم</option>
                     <option *ngFor="let day of weekdays" [value]="day">{{day}}</option>
                 </select>

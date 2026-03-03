@@ -18,12 +18,19 @@ interface Booking {
     order: number;
 }
 
+interface DirectionalDay {
+    id: string;
+    name: string;
+    direction: 'go' | 'return';
+    active: boolean;
+    times: string[];
+}
+
 interface UniversityConfig {
     universityId: string;
     universityName: string;
     pickupLocations: string[];
-    timeSlots: string[];
-    availableDays: string[];
+    directionalDays: DirectionalDay[];
     destinations: string[];
 }
 
@@ -59,9 +66,16 @@ export class DashboardComponent implements OnInit {
     // ✅ Get days available for the selected university
     availableDaysForFilter = computed(() => {
         const uni = this.selectedUni();
-        if (uni === 'all') return ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+        if (uni === 'all') {
+            // Get all possible unique active day names across all universities
+            const allDays = new Set<string>();
+            this.universityConfigs().forEach(c => {
+                c.directionalDays?.filter(d => d.active).forEach(d => allDays.add(d.name));
+            });
+            return Array.from(allDays);
+        }
         const config = this.universityConfigs().find(c => c.universityName === uni);
-        return config ? config.availableDays : [];
+        return config && config.directionalDays ? config.directionalDays.filter(d => d.active).map(d => d.name) : [];
     });
 
     filteredBookings = computed(() => {
@@ -182,26 +196,17 @@ export class DashboardComponent implements OnInit {
         config.pickupLocations.splice(index, 1);
     }
 
-    addDay(config: UniversityConfig) {
-        const day = prompt('أدخل اليوم الجديد (مثلاً: الجمعة):');
-        if (day) {
-            config.availableDays.push(day);
-        }
+    toggleDay(day: DirectionalDay) {
+        day.active = !day.active;
     }
 
-    removeDay(config: UniversityConfig, index: number) {
-        config.availableDays.splice(index, 1);
-    }
-
-    addTime(config: UniversityConfig) {
+    addTime(day: DirectionalDay) {
         const time = prompt('أدخل الموعد الجديد (مثلاً: 09:00 AM):');
-        if (time) {
-            config.timeSlots.push(time);
-        }
+        if (time) day.times.push(time);
     }
 
-    removeTime(config: UniversityConfig, index: number) {
-        config.timeSlots.splice(index, 1);
+    removeTime(day: DirectionalDay, index: number) {
+        day.times.splice(index, 1);
     }
 
     addDestination(config: UniversityConfig) {
@@ -251,7 +256,12 @@ export class DashboardComponent implements OnInit {
         this.editingBookingData = { ...booking };
         this.editingBookingData.bookingDateLocal = this.toDatetimeLocal(booking.bookingDate);
         const config = this.universityConfigs().find(c => c.universityName === booking.university);
-        this.editingAvailableTimes = config ? [...config.timeSlots] : [];
+        if (config && config.directionalDays) {
+            const currentDayConfig = config.directionalDays.find(d => d.name === booking.weekday);
+            this.editingAvailableTimes = currentDayConfig && currentDayConfig.times ? [...currentDayConfig.times] : [];
+        } else {
+            this.editingAvailableTimes = [];
+        }
     }
 
     toDatetimeLocal(dateStr: string): string {

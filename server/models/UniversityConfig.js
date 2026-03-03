@@ -21,13 +21,15 @@ const universityConfigSchema = new mongoose.Schema({
             'كفر الدوار مدخل العمدة'
         ]
     },
-    timeSlots: {
-        type: [String],
-        default: ['07:30 AM', '08:30 AM', '04:00 PM', '05:00 PM']
-    },
-    availableDays: {
-        type: [String],
-        default: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس']
+    directionalDays: {
+        type: [new mongoose.Schema({
+            id: String,
+            name: String,
+            direction: { type: String, enum: ['go', 'return'] },
+            active: { type: Boolean, default: false },
+            times: { type: [String], default: [] }
+        }, { _id: false })],
+        default: []
     },
     destinations: {
         type: [String],

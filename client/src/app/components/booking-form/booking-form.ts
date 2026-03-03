@@ -36,10 +36,13 @@ export class BookingForm implements OnInit {
   success = signal(false);
 
   // Dynamic lists from backend
-  weekdays = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+  directionalDays: any[] = [];
+  weekdays: string[] = [];
   timeSlots: string[] = [];
   pickupLocations: string[] = [];
-  destinations: string[] = ['السكن الجامعي HQ'];
+  destinations: string[] = [];
+  originalPickupLocations: string[] = [];
+  originalDestinations: string[] = [];
 
   universities = [
     'الجامعة المصرية اليابانية',
@@ -77,15 +80,43 @@ export class BookingForm implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            this.timeSlots = res.data.timeSlots || [];
-            this.pickupLocations = res.data.pickupLocations || [];
-            this.weekdays = res.data.availableDays || ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
-            this.destinations = res.data.destinations || (res.data.destination ? [res.data.destination] : ['السكن الجامعي HQ']);
-            this.formData.departureTo = this.destinations.length > 0 ? this.destinations[0] : '';
+            this.originalPickupLocations = res.data.pickupLocations || [];
+            this.originalDestinations = res.data.destinations || (res.data.destination ? [res.data.destination] : ['السكن الجامعي HQ']);
+            this.directionalDays = (res.data.directionalDays || []).filter((d: any) => d.active);
+            this.weekdays = this.directionalDays.map(d => d.name);
+
+            // Reset fields
+            this.pickupLocations = [...this.originalPickupLocations];
+            this.destinations = [...this.originalDestinations];
+            this.formData.weekday = '';
+            this.formData.timeSlot = '';
+            this.formData.departureTo = '';
+            this.formData.departureFrom = '';
           }
         },
         error: (err) => console.error('Failed to load settings', err)
       });
+  }
+
+  onDayChange() {
+    const selectedDay = this.directionalDays.find(d => d.name === this.formData.weekday);
+    if (selectedDay) {
+      this.timeSlots = selectedDay.times || [];
+      this.formData.timeSlot = '';
+
+      if (selectedDay.direction === 'go') {
+        this.pickupLocations = [...this.originalPickupLocations];
+        this.destinations = [...this.originalDestinations];
+        this.formData.departureFrom = '';
+        this.formData.departureTo = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
+      } else if (selectedDay.direction === 'return') {
+        this.pickupLocations = [...this.originalDestinations];
+        this.destinations = [...this.originalPickupLocations];
+        this.formData.departureFrom = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
+        this.formData.departureTo = '';
+      }
+    }
+    this.validate();
   }
 
   validate() {
@@ -134,7 +165,7 @@ export class BookingForm implements OnInit {
       timeSlot: '',
       university: this.preselectedUniversity ? university : '',
       departureFrom: '',
-      departureTo: dest,
+      departureTo: '',
       fullName: '',
       phoneNumber: ''
     };

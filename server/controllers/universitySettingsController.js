@@ -44,16 +44,14 @@ exports.updateUniversitySettings = async (req, res) => {
         const {
             universityName,
             pickupLocations,
-            timeSlots,
-            availableDays,
+            directionalDays,
             destinations
         } = req.body;
 
         const updateData = {
             universityName,
             pickupLocations,
-            timeSlots,
-            availableDays,
+            directionalDays,
             destinations,
             updatedAt: Date.now()
         };
