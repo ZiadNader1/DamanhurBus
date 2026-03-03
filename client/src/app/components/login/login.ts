@@ -17,7 +17,12 @@ export class Login {
   loading = false;
   errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {
+    // Auto redirect if already logged in!
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/admin/dashboard']);
+    }
+  }
 
   onLogin() {
     if (!this.email || !this.password) {
