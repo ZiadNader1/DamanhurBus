@@ -196,17 +196,39 @@ export class DashboardComponent implements OnInit {
         config.pickupLocations.splice(index, 1);
     }
 
-    toggleDay(day: DirectionalDay) {
-        day.active = !day.active;
-    }
+    addSpecificTime(config: UniversityConfig, dayId: string, time24: string) {
+        if (!dayId) {
+            alert('يرجى اختيار اليوم');
+            return;
+        }
+        if (!time24) {
+            alert('يرجى اختيار الوقت');
+            return;
+        }
 
-    addTime(day: DirectionalDay) {
-        const time = prompt('أدخل الموعد الجديد (مثلاً: 09:00 AM):');
-        if (time) day.times.push(time);
+        // Convert 24h to 12h format
+        const [hoursStr, minutesStr] = time24.split(':');
+        let hours = parseInt(hoursStr, 10);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const paddedHours = hours.toString().padStart(2, '0');
+        const formattedTime = `${paddedHours}:${minutesStr} ${ampm}`;
+
+        const day = config.directionalDays.find(d => d.id === dayId);
+        if (day) {
+            if (!day.times.includes(formattedTime)) {
+                day.times.push(formattedTime);
+            }
+            day.active = day.times.length > 0;
+        }
     }
 
     removeTime(day: DirectionalDay, index: number) {
         day.times.splice(index, 1);
+        if (day.times.length === 0) {
+            day.active = false;
+        }
     }
 
     addDestination(config: UniversityConfig) {
