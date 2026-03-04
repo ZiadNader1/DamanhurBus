@@ -329,6 +329,8 @@ export class DashboardComponent implements OnInit {
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
         const updatePayload = {
+            fullName: this.editingBookingData.fullName,
+            phoneNumber: this.editingBookingData.phoneNumber,
             timeSlot: this.editingBookingData.timeSlot,
             weekday: this.editingBookingData.weekday,
             departureFrom: this.editingBookingData.departureFrom,

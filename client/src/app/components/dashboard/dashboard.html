@@ -103,7 +103,12 @@
 
                         <tr *ngFor="let booking of group.bookings; let i = index">
                             <td class="text-center">{{ (group.busNumber - 1) * 15 + i + 1 }}</td>
-                            <td>{{ booking.fullName }}</td>
+                            <td>
+                                <span *ngIf="editingBookingId !== booking._id">{{ booking.fullName }}</span>
+                                <input *ngIf="editingBookingId === booking._id"
+                                    [(ngModel)]="editingBookingData.fullName" class="edit-select w-100"
+                                    style="padding:4px 8px; font-size:13.5px">
+                            </td>
                             <td class="text-center">
                                 <ng-container *ngIf="editingBookingId !== booking._id">
                                     {{ booking.timeSlot }}
@@ -117,7 +122,10 @@
                             <td>{{ booking.departureFrom }}</td>
                             <td>{{ booking.departureTo }}</td>
                             <td class="text-center">
-                                {{ booking.phoneNumber }}
+                                <span *ngIf="editingBookingId !== booking._id">{{ booking.phoneNumber }}</span>
+                                <input *ngIf="editingBookingId === booking._id"
+                                    [(ngModel)]="editingBookingData.phoneNumber" class="edit-select"
+                                    style="padding:4px 8px; font-size:13.5px; width:110px">
                                 <div class="booking-time" *ngIf="editingBookingId !== booking._id">
                                     {{ booking.bookingDate | date:'MMM d, y, h:mm:ss a' }}
                                 </div>
