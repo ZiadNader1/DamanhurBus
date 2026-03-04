@@ -113,12 +113,13 @@ export class BookingForm implements OnInit {
         next: (res) => {
           if (res.success && res.data) {
             this.originalPickupLocations = res.data.pickupLocations || [];
-            this.originalDestinations = res.data.destinations || ['العلمين'];
+            this.originalDestinations = res.data.destinations || [];
             this.directionalDays.set((res.data.directionalDays || []).filter((d: any) => d.active));
 
-            // Reset fields
+            // Reset fields to what's EXACTLY in the dashboard (No swapping/auto-selection)
             this.pickupLocations.set([...this.originalPickupLocations]);
             this.destinations.set([...this.originalDestinations]);
+
             this.formData.weekday = '';
             this.formData.timeSlot = '';
             this.formData.departureTo = '';
@@ -136,21 +137,8 @@ export class BookingForm implements OnInit {
       this.timeSlots.set(selectedDay.times || []);
       this.formData.timeSlot = '';
 
-      const isAlamein = this.universityIds[this.formData.university] === 'alamein';
-
-      if (selectedDay.direction === 'go') {
-        this.pickupLocations.set([...this.originalPickupLocations]);
-        this.destinations.set([...this.originalDestinations]);
-        this.formData.departureFrom = '';
-        this.formData.departureTo = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
-      } else if (selectedDay.direction === 'return') {
-        // Swap for Return
-        this.pickupLocations.set([...this.originalDestinations]);
-        this.destinations.set([...this.originalPickupLocations]);
-        // Auto-select University as From for Return
-        this.formData.departureFrom = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
-        this.formData.departureTo = '';
-      }
+      // Automatic swapping and field pre-filling has been removed to give 
+      // the user full control over the selection lists from the dashboard.
       this.cdr.detectChanges();
     }
     this.validate();
