@@ -92,6 +92,8 @@ const translations: Record<string, Record<Lang, string>> = {
     dash_save: { ar: 'حفظ التغييرات', en: 'Save Changes' },
     dash_choose_day: { ar: 'اختر اليوم والاتجاه', en: 'Choose Day & Direction' },
     dash_add_time: { ar: 'إضافة ميعاد', en: 'Add Time' },
+    go: { ar: 'ذهاب', en: 'Go' },
+    return: { ar: 'عودة', en: 'Return' },
 };
 
 @Injectable({ providedIn: 'root' })

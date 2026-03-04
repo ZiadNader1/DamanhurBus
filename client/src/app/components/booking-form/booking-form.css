@@ -211,3 +211,41 @@ select:focus {
 .time-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 }
+
+.location-grid {
+    grid-template-columns: 1fr;
+}
+
+/* Grouped Day Styles */
+.day-groups-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.day-group {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.day-name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #f59e0b;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 5px;
+}
+
+.no-times {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    font-style: italic;
+}

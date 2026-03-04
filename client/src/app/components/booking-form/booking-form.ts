@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, Input, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
 import { API_URL } from '../../api-config';
 import { TranslationService } from '../../services/translation.service';
 
@@ -36,23 +37,39 @@ export class BookingForm implements OnInit {
   loading = signal(false);
   success = signal(false);
 
-  // Dynamic lists from backend
-  directionalDays: any[] = [];
-  weekdays: string[] = [];
-  timeSlots: string[] = [];
-  pickupLocations: string[] = [];
-  destinations: string[] = [];
+  // Dynamic lists from backend - using signals for reactivity
+  directionalDays = signal<any[]>([]);
+  timeSlots = signal<string[]>([]);
+  pickupLocations = signal<string[]>([]);
+  destinations = signal<string[]>([]);
+
   originalPickupLocations: string[] = [];
   originalDestinations: string[] = [];
 
-  universities = [
-    'الجامعة المصرية اليابانية',
-    'جامعة العلمين الدولية',
-    'جامعة المنوفية الأهلية',
-    'جامعة دمنهور الأهلية'
-  ];
+  universities = computed(() => {
+    return this.lang.isArabic()
+      ? ['الجامعة المصرية اليابانية', 'جامعة العلمين الدولية', 'جامعة المنوفية الأهلية', 'جامعة دمنهور الأهلية']
+      : ['E-JUST', 'Alamein International University', 'Menofia Ahlia University', 'Damanhour Ahlia University'];
+  });
 
-  constructor(private http: HttpClient, public lang: TranslationService) { }
+  // Computed for UX - Groups days by their name (Sat, Sun...)
+  groupedDays = computed(() => {
+    const days = this.directionalDays();
+    const groups: Record<string, any[]> = {};
+    days.forEach(d => {
+      const parts = d.name.split(' ');
+      const name = parts[0];
+      if (!groups[name]) groups[name] = [];
+      groups[name].push(d);
+    });
+    return Object.entries(groups).map(([name, options]) => ({ name, options }));
+  });
+
+  constructor(
+    private http: HttpClient,
+    public lang: TranslationService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   universityIds: Record<string, string> = {
     'الجامعة المصرية اليابانية': 'ejust',
@@ -76,8 +93,18 @@ export class BookingForm implements OnInit {
     const uniId = this.universityIds[this.formData.university];
     if (uniId) {
       this.fetchUniversitySettings(uniId);
+    } else {
+      // Clear data if no uni selected
+      this.directionalDays.set([]);
+      this.pickupLocations.set([]);
+      this.destinations.set([]);
     }
     this.validate();
+  }
+
+  selectUniversity(uni: string) {
+    this.formData.university = uni;
+    this.onUniversityChange();
   }
 
   fetchUniversitySettings(uniId: string) {
@@ -86,17 +113,17 @@ export class BookingForm implements OnInit {
         next: (res) => {
           if (res.success && res.data) {
             this.originalPickupLocations = res.data.pickupLocations || [];
-            this.originalDestinations = res.data.destinations || (res.data.destination ? [res.data.destination] : ['السكن الجامعي HQ']);
-            this.directionalDays = (res.data.directionalDays || []).filter((d: any) => d.active);
-            this.weekdays = this.directionalDays.map(d => d.name);
+            this.originalDestinations = res.data.destinations || ['العلمين'];
+            this.directionalDays.set((res.data.directionalDays || []).filter((d: any) => d.active));
 
             // Reset fields
-            this.pickupLocations = [...this.originalPickupLocations];
-            this.destinations = [...this.originalDestinations];
+            this.pickupLocations.set([...this.originalPickupLocations]);
+            this.destinations.set([...this.originalDestinations]);
             this.formData.weekday = '';
             this.formData.timeSlot = '';
             this.formData.departureTo = '';
             this.formData.departureFrom = '';
+            this.cdr.detectChanges();
           }
         },
         error: (err) => console.error('Failed to load settings', err)
@@ -104,22 +131,27 @@ export class BookingForm implements OnInit {
   }
 
   onDayChange() {
-    const selectedDay = this.directionalDays.find(d => d.name === this.formData.weekday);
+    const selectedDay = this.directionalDays().find(d => d.name === this.formData.weekday);
     if (selectedDay) {
-      this.timeSlots = selectedDay.times || [];
+      this.timeSlots.set(selectedDay.times || []);
       this.formData.timeSlot = '';
 
+      const isAlamein = this.universityIds[this.formData.university] === 'alamein';
+
       if (selectedDay.direction === 'go') {
-        this.pickupLocations = [...this.originalPickupLocations];
-        this.destinations = [...this.originalDestinations];
+        this.pickupLocations.set([...this.originalPickupLocations]);
+        this.destinations.set([...this.originalDestinations]);
         this.formData.departureFrom = '';
         this.formData.departureTo = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
       } else if (selectedDay.direction === 'return') {
-        this.pickupLocations = [...this.originalDestinations];
-        this.destinations = [...this.originalPickupLocations];
+        // Swap for Return
+        this.pickupLocations.set([...this.originalDestinations]);
+        this.destinations.set([...this.originalPickupLocations]);
+        // Auto-select University as From for Return
         this.formData.departureFrom = this.originalDestinations.length > 0 ? this.originalDestinations[0] : '';
         this.formData.departureTo = '';
       }
+      this.cdr.detectChanges();
     }
     this.validate();
   }
@@ -132,6 +164,18 @@ export class BookingForm implements OnInit {
   selectTime(time: string) {
     this.formData.timeSlot = time;
     this.validate();
+  }
+
+  selectFrom(loc: string) {
+    this.formData.departureFrom = loc;
+    this.validate();
+    this.cdr.detectChanges();
+  }
+
+  selectTo(dest: string) {
+    this.formData.departureTo = dest;
+    this.validate();
+    this.cdr.detectChanges();
   }
 
   validate() {
