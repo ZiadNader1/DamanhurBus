@@ -30,9 +30,9 @@ interface DirectionalDay {
 interface UniversityConfig {
     universityId: string;
     universityName: string;
-    pickupLocations: string[];
+    pickupLocations: { name: string; active: boolean }[];
     directionalDays: DirectionalDay[];
-    destinations: string[];
+    destinations: { name: string; active: boolean }[];
 }
 
 interface GroupedBookings {
@@ -187,14 +187,18 @@ export class DashboardComponent implements OnInit {
     }
 
     addLocation(config: UniversityConfig) {
-        const loc = prompt('أدخل اسم نقطة التحرك الجديدة:');
+        const loc = prompt(this.lang.isArabic() ? 'أدخل اسم نقطة التحرك الجديدة:' : 'Enter new pickup location:');
         if (loc) {
-            config.pickupLocations.push(loc);
+            config.pickupLocations.push({ name: loc, active: true });
         }
     }
 
     removeLocation(config: UniversityConfig, index: number) {
         config.pickupLocations.splice(index, 1);
+    }
+
+    toggleLocation(loc: { name: string; active: boolean }) {
+        loc.active = !loc.active;
     }
 
     addSpecificTime(config: UniversityConfig, dayId: string, time24: string) {
@@ -236,12 +240,16 @@ export class DashboardComponent implements OnInit {
         const dest = prompt(this.lang.isArabic() ? 'أدخل الوجهة الجديدة:' : 'Enter new destination:');
         if (dest) {
             if (!config.destinations) config.destinations = [];
-            config.destinations.push(dest);
+            config.destinations.push({ name: dest, active: true });
         }
     }
 
     removeDestination(config: UniversityConfig, index: number) {
         config.destinations.splice(index, 1);
+    }
+
+    toggleDestination(dest: { name: string; active: boolean }) {
+        dest.active = !dest.active;
     }
 
     moveBooking(bookingId: string, direction: 'up' | 'down') {
@@ -399,8 +407,9 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    exportToPNG() {
-        const element = document.getElementById('printable-area');
+    exportToPNG(groupId?: string) {
+        const elementId = groupId ? `bus-group-${groupId}` : 'printable-area';
+        const element = document.getElementById(elementId);
         if (!element) return;
 
         html2canvas(element, {
@@ -420,11 +429,18 @@ export class DashboardComponent implements OnInit {
                     htmlEl.style.color = '#ffffff';
                     htmlEl.style.display = 'block';
                 });
+
+                // Ensure text visibility in light mode clones if needed
+                const textElements = clonedDoc.querySelectorAll('.bus-group p, .bus-group span, .bus-group td');
+                textElements.forEach(el => {
+                    (el as HTMLElement).style.color = '#ffffff';
+                });
             }
         }).then(canvas => {
             const link = document.createElement('a');
             const date = new Date();
-            const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`;
+            const suffix = groupId ? `-مجموعة-${groupId}` : '';
+            const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}${suffix}.png`;
             link.download = filename;
             link.href = canvas.toDataURL('image/png');
             link.click();

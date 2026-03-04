@@ -13,12 +13,15 @@ const universityConfigSchema = new mongoose.Schema({
         trim: true
     },
     pickupLocations: {
-        type: [String],
+        type: [{
+            name: { type: String, trim: true },
+            active: { type: Boolean, default: true }
+        }],
         default: [
-            'دمنهور مدخل المحافظة',
-            'إيتاي شارع فراويلة',
-            'أبو حمص عند الكوبري',
-            'كفر الدوار مدخل العمدة'
+            { name: 'دمنهور مدخل المحافظة', active: true },
+            { name: 'إيتاي شارع فراويلة', active: true },
+            { name: 'أبو حمص عند الكوبري', active: true },
+            { name: 'كفر الدوار مدخل العمدة', active: true }
         ]
     },
     directionalDays: {
@@ -32,8 +35,11 @@ const universityConfigSchema = new mongoose.Schema({
         default: []
     },
     destinations: {
-        type: [String],
-        default: ['السكن الجامعي HQ']
+        type: [{
+            name: { type: String, trim: true },
+            active: { type: Boolean, default: true }
+        }],
+        default: [{ name: 'السكن الجامعي HQ', active: true }]
     },
     updatedAt: {
         type: Date,

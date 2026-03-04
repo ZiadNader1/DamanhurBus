@@ -80,14 +80,21 @@
                     </thead>
                     <tbody *ngFor="let group of groupedBookings()">
                         <!-- Bus Category Header -->
-                        <tr class="bus-header">
+                        <tr class="bus-header" [id]="'bus-group-' + group.busNumber + group.weekday + group.timeSlot">
                             <td colspan="6">
-                                <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
-                                    <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
-                                    <span class="separator"> - </span>
-                                    <span>{{ group.weekday }}</span>
-                                    <span class="separator"> - </span>
-                                    <span class="time-slot">{{ group.timeSlot }}</span>
+                                <div class="bus-title-row">
+                                    <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
+                                        <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
+                                        <span class="separator"> - </span>
+                                        <span>{{ group.weekday }}</span>
+                                        <span class="separator"> - </span>
+                                        <span class="time-slot">{{ group.timeSlot }}</span>
+                                    </div>
+                                    <button class="mini-png-btn no-print"
+                                        (click)="exportToPNG(group.busNumber + group.weekday + group.timeSlot)"
+                                        [title]="lang.t('dash_bus_export')">
+                                        <i class="bi bi-image"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -157,9 +164,13 @@
                     <div class="setting-section">
                         <h4>{{ lang.t('dash_location') }}</h4>
                         <div class="tag-list">
-                            <span class="tag" *ngFor="let loc of config.pickupLocations; let i = index">
-                                {{ loc }}
-                                <i class="bi bi-x" (click)="removeLocation(config, i)"></i>
+                            <span class="tag" *ngFor="let loc of config.pickupLocations; let i = index"
+                                [class.inactive]="!loc.active">
+                                <i class="bi toggle-icon" [class.bi-eye]="loc.active" [class.bi-eye-slash]="!loc.active"
+                                    (click)="toggleLocation(loc)"
+                                    [title]="loc.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
+                                <span class="tag-text">{{ loc.name }}</span>
+                                <i class="bi bi-x remove-icon" (click)="removeLocation(config, i)"></i>
                             </span>
                             <button class="add-tag" (click)="addLocation(config)">+ {{ lang.t('dash_add') }}</button>
                         </div>
@@ -202,9 +213,13 @@
                     <div class="setting-section">
                         <h4>{{ lang.t('dash_destinations') }}</h4>
                         <div class="tag-list">
-                            <span class="tag" *ngFor="let dest of config.destinations; let i = index">
-                                {{ dest }}
-                                <i class="bi bi-x" (click)="removeDestination(config, i)"></i>
+                            <span class="tag" *ngFor="let dest of config.destinations; let i = index"
+                                [class.inactive]="!dest.active">
+                                <i class="bi toggle-icon" [class.bi-eye]="dest.active"
+                                    [class.bi-eye-slash]="!dest.active" (click)="toggleDestination(dest)"
+                                    [title]="dest.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
+                                <span class="tag-text">{{ dest.name }}</span>
+                                <i class="bi bi-x remove-icon" (click)="removeLocation(config, i)"></i>
                             </span>
                             <button class="add-tag" (click)="addDestination(config)">+ {{ lang.t('dash_add') }}</button>
                         </div>

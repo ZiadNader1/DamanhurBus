@@ -116,9 +116,9 @@ export class BookingForm implements OnInit {
             this.originalDestinations = res.data.destinations || [];
             this.directionalDays.set((res.data.directionalDays || []).filter((d: any) => d.active));
 
-            // Reset fields to what's EXACTLY in the dashboard (No swapping/auto-selection)
-            this.pickupLocations.set([...this.originalPickupLocations]);
-            this.destinations.set([...this.originalDestinations]);
+            // Reset fields to what's EXACTLY in the dashboard but FILTERED by active status
+            this.pickupLocations.set(this.originalPickupLocations.filter((l: any) => l.active).map((l: any) => l.name));
+            this.destinations.set(this.originalDestinations.filter((d: any) => d.active).map((d: any) => d.name));
 
             this.formData.weekday = '';
             this.formData.timeSlot = '';

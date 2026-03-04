@@ -12,9 +12,17 @@
             <a routerLink="/contact" class="nav-link" routerLinkActive="active">{{ lang.t('nav_contact') }}</a>
             <a routerLink="/login" class="nav-link admin-link">{{ lang.t('nav_admin') }}</a>
 
+            <!-- Theme Toggle -->
+            <button class="nav-btn theme-toggle" (click)="theme.toggle()"
+                [title]="theme.isDark() ? lang.t('theme_light') : lang.t('theme_dark')">
+                <i class="bi" [class.bi-sun-fill]="!theme.isDark()" [class.bi-moon-stars-fill]="theme.isDark()"></i>
+                <span class="btn-text">{{ theme.isDark() ? lang.t('theme_light') : lang.t('theme_dark') }}</span>
+            </button>
+
             <!-- Language Toggle -->
-            <button class="lang-toggle" (click)="lang.toggle()">
-                🌐 {{ lang.t('lang_toggle') }}
+            <button class="nav-btn lang-toggle" (click)="lang.toggle()">
+                <i class="bi bi-translate"></i>
+                <span class="btn-text">{{ lang.t('lang_toggle') }}</span>
             </button>
         </div>
     </div>

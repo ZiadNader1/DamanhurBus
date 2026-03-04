@@ -7,7 +7,9 @@ const translations: Record<string, Record<Lang, string>> = {
     nav_booking: { ar: 'الحجز', en: 'Booking' },
     nav_contact: { ar: 'تواصل', en: 'Contact' },
     nav_admin: { ar: 'لوحة التحكم', en: 'Admin Panel' },
-    lang_toggle: { ar: 'EN', en: 'عربي' },
+    lang_toggle: { ar: 'EN', en: 'AR' },
+    theme_light: { ar: 'الوضع النهاري', en: 'Light Mode' },
+    theme_dark: { ar: 'الوضع الليلي', en: 'Dark Mode' },
 
     // University Select Page
     hero_title: { ar: 'دمنهور باص', en: 'Damanhour Bus' },
@@ -32,6 +34,7 @@ const translations: Record<string, Record<Lang, string>> = {
     form_from: { ar: 'نقطة التحرك (من)', en: 'Pickup Point (From)' },
     form_from_ph: { ar: 'حدد المحطة', en: 'Select station' },
     form_to: { ar: 'الوجهة (إلى)', en: 'Destination (To)' },
+    form_to_ph: { ar: 'حدد الوجهة', en: 'Select destination' },
     form_name: { ar: 'الاسم المكتمل', en: 'Full Name' },
     form_name_ph: { ar: 'أدخل اسمك', en: 'Enter your name' },
     form_phone: { ar: 'رقم الهاتف (WhatsApp)', en: 'Phone Number (WhatsApp)' },
@@ -92,6 +95,9 @@ const translations: Record<string, Record<Lang, string>> = {
     dash_save: { ar: 'حفظ التغييرات', en: 'Save Changes' },
     dash_choose_day: { ar: 'اختر اليوم والاتجاه', en: 'Choose Day & Direction' },
     dash_add_time: { ar: 'إضافة ميعاد', en: 'Add Time' },
+    dash_active: { ar: 'تفعيل', en: 'Active' },
+    dash_inactive: { ar: 'تعطيل', en: 'Inactive' },
+    dash_bus_export: { ar: 'تصدير هذا الباص', en: 'Export this Bus' },
     go: { ar: 'ذهاب', en: 'Go' },
     return: { ar: 'عودة', en: 'Return' },
 };

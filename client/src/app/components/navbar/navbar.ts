@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslationService } from '../../services/translation.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,5 +12,8 @@ import { TranslationService } from '../../services/translation.service';
   styleUrl: './navbar.css'
 })
 export class NavbarComponent {
-  constructor(public lang: TranslationService) { }
+  constructor(
+    public lang: TranslationService,
+    public theme: ThemeService
+  ) { }
 }
