@@ -119,8 +119,18 @@
                                     </option>
                                 </select>
                             </td>
-                            <td>{{ booking.departureFrom }}</td>
-                            <td>{{ booking.departureTo }}</td>
+                            <td>
+                                <span *ngIf="editingBookingId !== booking._id">{{ booking.departureFrom }}</span>
+                                <input *ngIf="editingBookingId === booking._id"
+                                    [(ngModel)]="editingBookingData.departureFrom" class="edit-select w-100"
+                                    style="padding:4px 8px; font-size:13.5px">
+                            </td>
+                            <td>
+                                <span *ngIf="editingBookingId !== booking._id">{{ booking.departureTo }}</span>
+                                <input *ngIf="editingBookingId === booking._id"
+                                    [(ngModel)]="editingBookingData.departureTo" class="edit-select w-100"
+                                    style="padding:4px 8px; font-size:13.5px">
+                            </td>
                             <td class="text-center">
                                 <span *ngIf="editingBookingId !== booking._id">{{ booking.phoneNumber }}</span>
                                 <input *ngIf="editingBookingId === booking._id"

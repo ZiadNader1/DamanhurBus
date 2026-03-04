@@ -334,6 +334,7 @@ export class DashboardComponent implements OnInit {
             timeSlot: this.editingBookingData.timeSlot,
             weekday: this.editingBookingData.weekday,
             departureFrom: this.editingBookingData.departureFrom,
+            departureTo: this.editingBookingData.departureTo,
             bookingDate: this.editingBookingData.bookingDateLocal
                 ? new Date(this.editingBookingData.bookingDateLocal).toISOString()
                 : this.editingBookingData.bookingDate

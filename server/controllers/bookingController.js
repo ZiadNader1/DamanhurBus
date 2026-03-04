@@ -84,9 +84,9 @@ exports.updateBookingOrder = async (req, res) => {
 // @access  Private (Admin)
 exports.updateBooking = async (req, res) => {
     try {
-        const { fullName, phoneNumber, timeSlot, weekday, departureFrom, bookingDate } = req.body;
+        const { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, bookingDate } = req.body;
 
-        const updateFields = { fullName, phoneNumber, timeSlot, weekday, departureFrom };
+        const updateFields = { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo };
         if (bookingDate) updateFields.bookingDate = new Date(bookingDate);
 
         const booking = await Booking.findByIdAndUpdate(
