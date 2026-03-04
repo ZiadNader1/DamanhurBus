@@ -14,6 +14,8 @@ body.dark-mode {
     --border-color: rgba(255, 255, 255, 0.08);
     --input-bg: rgba(255, 255, 255, 0.07);
     --nav-bg: rgba(15, 23, 42, 0.92);
+    --header-bg: #1e3a8a;
+    --header-text: #ffffff;
     --bg-image-opacity: 0.25;
 }
 
@@ -25,6 +27,8 @@ body.light-mode {
     --border-color: rgba(0, 0, 0, 0.1);
     --input-bg: #f8fafc;
     --nav-bg: rgba(255, 255, 255, 0.95);
+    --header-bg: #f8fafc;
+    --header-text: #0f172a;
     --bg-image-opacity: 0.1;
 }
 

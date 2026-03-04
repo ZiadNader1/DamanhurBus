@@ -180,15 +180,15 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #e2e8f0;
+    color: var(--text-color);
     font-family: inherit;
     font-size: 0.88rem;
     cursor: pointer;
 }
 
 .uni-select option {
-    background: #1e293b;
-    color: #e2e8f0;
+    background: var(--bg-color);
+    color: var(--text-color);
 }
 
 /* Premium Toolbar Buttons */
@@ -213,9 +213,9 @@
 }
 
 .refresh-btn {
-    background: rgba(51, 65, 85, 0.8);
-    color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 .refresh-btn:hover {
@@ -305,7 +305,7 @@ td {
 
 /* Bus Header Style */
 .bus-header td {
-    background: #1e3a8a !important;
+    background: var(--header-bg) !important;
     padding: 0 !important;
     height: 50px;
     vertical-align: middle;
@@ -321,16 +321,16 @@ td {
 
 .bus-title {
     font-weight: 800;
-    color: #ffffff !important;
+    color: var(--header-text) !important;
     font-size: 1.15rem;
     text-align: right;
     white-space: nowrap;
 }
 
 .mini-png-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     width: 32px;
     height: 32px;
     border-radius: 6px;
@@ -372,17 +372,22 @@ td {
 /* Action Buttons */
 .action-btns {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     justify-content: center;
+    flex-wrap: wrap;
+    padding: 8px 0;
 }
 
 .btn-icon {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #fff;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -393,11 +398,11 @@ td {
 
 /* Edit Options */
 .edit-select {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 10px;
 }
 
 .save-btn:hover {
