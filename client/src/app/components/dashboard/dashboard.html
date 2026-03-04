@@ -127,6 +127,14 @@
                             <td class="no-print">
                                 <div class="action-btns">
                                     <ng-container *ngIf="editingBookingId !== booking._id">
+                                        <button class="btn-icon move-btn" (click)="moveBooking(booking._id, 'up')"
+                                            [title]="lang.isArabic() ? 'تحريك لأعلى' : 'Move Up'">
+                                            <i class="bi bi-arrow-up-short"></i>
+                                        </button>
+                                        <button class="btn-icon move-btn" (click)="moveBooking(booking._id, 'down')"
+                                            [title]="lang.isArabic() ? 'تحريك لأسفل' : 'Move Down'">
+                                            <i class="bi bi-arrow-down-short"></i>
+                                        </button>
                                         <button class="btn-icon edit-btn" (click)="startEditing(booking)"
                                             [title]="lang.isArabic() ? 'تعديل' : 'Edit'">
                                             <i class="bi bi-pencil-square"></i>
