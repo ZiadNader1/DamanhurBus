@@ -16,7 +16,7 @@
     text-align: center;
     margin-bottom: 55px;
     animation: fadeInDown 0.8s ease-out;
-    color: white;
+    color: var(--text-color);
 }
 
 .main-logo {
@@ -27,14 +27,14 @@
 .hero-section h1 {
     font-size: 3rem;
     font-weight: 800;
-    color: white;
+    color: var(--text-color);
     margin-bottom: 10px;
     letter-spacing: -1px;
 }
 
 .hero-section p {
     font-size: 1.15rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-muted);
 }
 
 /* Universities Grid */

@@ -1,13 +1,14 @@
 .navbar {
-  background-color: rgba(15, 23, 42, 0.92);
+  background-color: var(--nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
   z-index: 1000;
   padding: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .nav-container {
@@ -43,7 +44,7 @@
 }
 
 .nav-link {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -83,9 +84,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   padding: 7px 14px;
   border-radius: 8px;
   font-size: 0.88rem;
