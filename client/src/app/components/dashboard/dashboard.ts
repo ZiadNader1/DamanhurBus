@@ -440,8 +440,29 @@ export class DashboardComponent implements OnInit {
                     htmlEl.style.display = 'block';
                 });
 
-                // Ensure text visibility in light mode clones if needed
-                const textElements = clonedDoc.querySelectorAll('.bus-group p, .bus-group span, .bus-group td');
+                // If exporting a group, ensure it looks like a table by adding headers
+                if (groupId) {
+                    const clonedGroup = clonedDoc.getElementById(elementId);
+                    if (clonedGroup) {
+                        const originalTable = document.querySelector('table');
+                        if (originalTable) {
+                            const originalHead = originalTable.querySelector('thead');
+                            if (originalHead) {
+                                const newHead = originalHead.cloneNode(true) as HTMLElement;
+                                // Style the injected header for visibility
+                                newHead.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                                newHead.querySelectorAll('th').forEach(th => {
+                                    th.style.color = '#94a3b8';
+                                    th.style.padding = '12px';
+                                });
+                                clonedGroup.insertBefore(newHead, clonedGroup.firstChild);
+                            }
+                        }
+                    }
+                }
+
+                // Ensure text visibility in light mode clones
+                const textElements = clonedDoc.querySelectorAll('.bus-group p, .bus-group span, .bus-group td, td');
                 textElements.forEach(el => {
                     (el as HTMLElement).style.color = '#ffffff';
                 });

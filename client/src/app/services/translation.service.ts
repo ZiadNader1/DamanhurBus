@@ -85,6 +85,7 @@ const translations: Record<string, Record<Lang, string>> = {
     dash_th_name: { ar: 'الاسم', en: 'Name' },
     dash_th_time: { ar: 'الموعد', en: 'Time' },
     dash_th_pickup: { ar: 'التحرك', en: 'Pickup' },
+    dash_th_destination: { ar: 'الوجهة', en: 'To' },
     dash_th_phone: { ar: 'الهاتف', en: 'Phone' },
     dash_th_actions: { ar: 'التحكم', en: 'Actions' },
     dash_bus: { ar: 'باص', en: 'Bus' },

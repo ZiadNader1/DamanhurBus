@@ -74,14 +74,16 @@
                             <th>{{ lang.t('dash_th_name') }}</th>
                             <th>{{ lang.t('dash_th_time') }}</th>
                             <th>{{ lang.t('dash_th_pickup') }}</th>
+                            <th>{{ lang.t('dash_th_destination') }}</th>
                             <th>{{ lang.t('dash_th_phone') }}</th>
                             <th class="no-print">{{ lang.t('dash_th_actions') }}</th>
                         </tr>
                     </thead>
-                    <tbody *ngFor="let group of groupedBookings()">
+                    <tbody *ngFor="let group of groupedBookings()"
+                        [id]="'bus-group-' + group.busNumber + group.weekday + group.timeSlot">
                         <!-- Bus Category Header -->
-                        <tr class="bus-header" [id]="'bus-group-' + group.busNumber + group.weekday + group.timeSlot">
-                            <td colspan="6">
+                        <tr class="bus-header">
+                            <td colspan="7">
                                 <div class="bus-title-row">
                                     <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
                                         <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
@@ -113,6 +115,7 @@
                                 </select>
                             </td>
                             <td>{{ booking.departureFrom }}</td>
+                            <td>{{ booking.departureTo }}</td>
                             <td class="text-center">
                                 {{ booking.phoneNumber }}
                                 <div class="booking-time" *ngIf="editingBookingId !== booking._id">
@@ -127,11 +130,13 @@
                             <td class="no-print">
                                 <div class="action-btns">
                                     <ng-container *ngIf="editingBookingId !== booking._id">
-                                        <button class="btn-icon move-btn" (click)="moveBooking(booking._id, 'up')"
+                                        <button class="btn-icon move-btn no-print"
+                                            (click)="moveBooking(booking._id, 'up')"
                                             [title]="lang.isArabic() ? 'تحريك لأعلى' : 'Move Up'">
                                             <i class="bi bi-arrow-up-short"></i>
                                         </button>
-                                        <button class="btn-icon move-btn" (click)="moveBooking(booking._id, 'down')"
+                                        <button class="btn-icon move-btn no-print"
+                                            (click)="moveBooking(booking._id, 'down')"
                                             [title]="lang.isArabic() ? 'تحريك لأسفل' : 'Move Down'">
                                             <i class="bi bi-arrow-down-short"></i>
                                         </button>
