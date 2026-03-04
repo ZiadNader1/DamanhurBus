@@ -219,7 +219,7 @@
                                     [class.bi-eye-slash]="!dest.active" (click)="toggleDestination(dest)"
                                     [title]="dest.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
                                 <span class="tag-text">{{ dest.name }}</span>
-                                <i class="bi bi-x remove-icon" (click)="removeLocation(config, i)"></i>
+                                <i class="bi bi-x remove-icon" (click)="removeDestination(config, i)"></i>
                             </span>
                             <button class="add-tag" (click)="addDestination(config)">+ {{ lang.t('dash_add') }}</button>
                         </div>

@@ -159,10 +159,20 @@ export class DashboardComponent implements OnInit {
                 error: () => this.loading.set(false)
             });
 
-        // Fetch Settings
         this.http.get<{ success: boolean, data: UniversityConfig[] }>(`${API_URL}/api/settings`, { headers })
             .subscribe({
-                next: (res) => this.universityConfigs.set(res.data),
+                next: (res) => {
+                    const sanitized = (res.data || []).map(config => ({
+                        ...config,
+                        pickupLocations: (config.pickupLocations || []).map((l: any) =>
+                            typeof l === 'string' ? { name: l, active: true } : l
+                        ),
+                        destinations: (config.destinations || []).map((d: any) =>
+                            typeof d === 'string' ? { name: d, active: true } : d
+                        )
+                    }));
+                    this.universityConfigs.set(sanitized);
+                },
                 error: () => { }
             });
     }

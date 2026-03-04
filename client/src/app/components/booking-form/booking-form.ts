@@ -112,9 +112,18 @@ export class BookingForm implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            this.originalPickupLocations = res.data.pickupLocations || [];
-            this.originalDestinations = res.data.destinations || [];
-            this.directionalDays.set((res.data.directionalDays || []).filter((d: any) => d.active));
+            const config = res.data;
+            // Sanitize incoming data to handle potential string arrays
+            const sanitizedPickup = (config.pickupLocations || []).map((l: any) =>
+              typeof l === 'string' ? { name: l, active: true } : l
+            );
+            const sanitizedDest = (config.destinations || []).map((d: any) =>
+              typeof d === 'string' ? { name: d, active: true } : d
+            );
+
+            this.originalPickupLocations = sanitizedPickup;
+            this.originalDestinations = sanitizedDest;
+            this.directionalDays.set((config.directionalDays || []).filter((d: any) => d.active));
 
             // Reset fields to what's EXACTLY in the dashboard but FILTERED by active status
             this.pickupLocations.set(this.originalPickupLocations.filter((l: any) => l.active).map((l: any) => l.name));
