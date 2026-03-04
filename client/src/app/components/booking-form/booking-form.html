@@ -7,36 +7,23 @@
 
         <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
-            <!-- Weekday (Grouped Chips) -->
+            <!-- Weekday (Select) -->
             <div class="form-group" [class.has-error]="errors().weekday">
-                <label><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
-                <div class="day-groups-container">
-                    <div class="day-group" *ngFor="let group of groupedDays()">
-                        <div class="day-name">{{ group.name }}</div>
-                        <div class="selection-grid">
-                            <div *ngFor="let opt of group.options" class="chip"
-                                [class.selected]="formData.weekday === opt.name" (click)="selectDay(opt)">
-                                <span class="direction-badge">{{ opt.name.includes('ذهاب') || opt.name.includes('Go') ?
-                                    lang.t('go') : lang.t('return') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
+                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()">
+                    <option value="" disabled selected>{{ lang.t('form_day_ph') }}</option>
+                    <option *ngFor="let day of directionalDays()" [value]="day.name">{{day.name}}</option>
+                </select>
                 <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
             </div>
 
-            <!-- Time Slot (Chips) -->
+            <!-- Time Slot (Select) -->
             <div class="form-group" [class.has-error]="errors().timeSlot">
-                <label><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
-                <div class="selection-grid time-grid">
-                    <div *ngFor="let time of timeSlots()" class="chip" [class.selected]="formData.timeSlot === time"
-                        (click)="selectTime(time)">
-                        <span class="time-val">{{ time }}</span>
-                    </div>
-                    <div *ngIf="timeSlots().length === 0" class="no-times">
-                        {{ lang.t('form_day_ph') }}
-                    </div>
-                </div>
+                <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
+                <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()">
+                    <option value="" disabled selected>{{ lang.t('form_time_ph') }}</option>
+                    <option *ngFor="let time of timeSlots()" [value]="time">{{time}}</option>
+                </select>
                 <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
             </div>
 
@@ -51,27 +38,24 @@
                 <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
             </div>
 
-            <!-- Departure From (Chips) -->
+            <!-- Departure From (Select) -->
             <div class="form-group" [class.has-error]="errors().departureFrom">
                 <label for="departureFrom"><i class="bi bi-geo-alt"></i> {{ lang.t('form_from') }}</label>
-                <div class="selection-grid location-grid">
-                    <div *ngFor="let loc of pickupLocations()" class="chip"
-                        [class.selected]="formData.departureFrom === loc" (click)="selectFrom(loc)">
-                        <span>{{ loc }}</span>
-                    </div>
-                </div>
+                <select id="departureFrom" name="departureFrom" [(ngModel)]="formData.departureFrom"
+                    (change)="validate()">
+                    <option value="" disabled selected>{{ lang.t('form_from_ph') }}</option>
+                    <option *ngFor="let loc of pickupLocations()" [value]="loc">{{loc}}</option>
+                </select>
                 <span class="error-msg" *ngIf="errors().departureFrom">{{errors().departureFrom}}</span>
             </div>
 
-            <!-- Departure To (Chips) -->
+            <!-- Departure To (Select) -->
             <div class="form-group" [class.has-error]="errors().departureTo">
                 <label for="departureTo"><i class="bi bi-geo-alt-fill"></i> {{ lang.t('form_to') }}</label>
-                <div class="selection-grid location-grid">
-                    <div *ngFor="let loc of destinations()" class="chip" [class.selected]="formData.departureTo === loc"
-                        (click)="selectTo(loc)">
-                        <span>{{ loc }}</span>
-                    </div>
-                </div>
+                <select id="departureTo" name="departureTo" [(ngModel)]="formData.departureTo" (change)="validate()">
+                    <option value="" disabled selected>{{ lang.t('form_to_ph') }}</option>
+                    <option *ngFor="let loc of destinations()" [value]="loc">{{loc}}</option>
+                </select>
                 <span class="error-msg" *ngIf="errors().departureTo">{{errors().departureTo}}</span>
             </div>
 
