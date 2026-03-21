@@ -52,9 +52,10 @@ export class BookingForm implements OnInit {
   timeSlots = signal<string[]>([]);
 
   activeUniversityConfig = signal<any>(null);
+  selectedGovernorateId = signal<string>(''); // signal wrapper so computed() can track it
 
   activeGovernorateConfig = computed(() => {
-    const govId = this.formData.governorate;
+    const govId = this.selectedGovernorateId();
     const govName = this.governorates().find(g => g._id === govId)?.name;
     const uniConfig = this.activeUniversityConfig();
     if (!govName || !uniConfig || !uniConfig.governorates) return null;
@@ -161,6 +162,16 @@ export class BookingForm implements OnInit {
     this.formData.departureFrom = '';
     this.formData.departureTo = '';
     this.timeSlots.set([]);
+
+    // Update the signal so computed properties react
+    this.selectedGovernorateId.set(this.formData.governorate);
+
+    // If university is already selected but settings not loaded yet, fetch now
+    const uniId = this.universityIds[this.formData.university];
+    if (uniId && !this.activeUniversityConfig()) {
+      this.fetchUniversitySettings(uniId);
+    }
+
     this.validate();
     this.cdr.detectChanges();
   }
