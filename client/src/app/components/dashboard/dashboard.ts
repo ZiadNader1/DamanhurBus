@@ -17,6 +17,7 @@ interface Booking {
     departureFrom: string;
     departureTo: string;
     bookingDate: string;
+    governorate: string;
     order: number;
 }
 
@@ -72,7 +73,8 @@ export class DashboardComponent implements OnInit {
     loading = signal(false);
 
     selectedUni = signal('all');
-    selectedDay = signal('all'); // ✅ New Filter
+    selectedDay = signal('all');
+    selectedGov = signal('all'); // ✅ New Governorate Filter
 
     today = new Date();
     editingBookingId: string | null = null;
@@ -101,6 +103,7 @@ export class DashboardComponent implements OnInit {
     filteredBookings = computed(() => {
         const uni = this.selectedUni();
         const day = this.selectedDay();
+        const gov = this.selectedGov();
         let all = this.bookings();
 
         if (uni !== 'all') {
@@ -108,6 +111,9 @@ export class DashboardComponent implements OnInit {
         }
         if (day !== 'all') {
             all = all.filter(b => b.weekday === day);
+        }
+        if (gov !== 'all') {
+            all = all.filter(b => b.governorate === gov);
         }
         return all;
     });
@@ -154,6 +160,10 @@ export class DashboardComponent implements OnInit {
 
     onDayChange(val: string) {
         this.selectedDay.set(val);
+    }
+
+    onGovChange(val: string) {
+        this.selectedGov.set(val);
     }
 
     fetchData() {

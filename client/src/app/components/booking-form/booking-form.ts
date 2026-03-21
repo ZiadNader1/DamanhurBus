@@ -266,7 +266,17 @@ export class BookingForm implements OnInit {
     if (!this.validate()) return;
 
     this.loading.set(true);
-    this.http.post(`${API_URL}/api/booking`, this.formData)
+    
+    // Resolve governorate name from the ID
+    const govId = this.formData.governorate;
+    const govName = this.governorates().find(g => g._id === govId)?.name || '';
+
+    const payload = {
+      ...this.formData,
+      governorate: govName
+    };
+
+    this.http.post(`${API_URL}/api/booking`, payload)
       .subscribe({
         next: (res) => {
           this.loading.set(false);

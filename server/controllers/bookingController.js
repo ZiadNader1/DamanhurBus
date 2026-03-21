@@ -12,7 +12,8 @@ exports.createBooking = async (req, res) => {
             weekday,
             timeSlot,
             departureFrom,
-            departureTo
+            departureTo,
+            governorate
         } = req.body;
 
         const booking = await Booking.create({
@@ -22,7 +23,8 @@ exports.createBooking = async (req, res) => {
             weekday,
             timeSlot,
             departureFrom,
-            departureTo
+            departureTo,
+            governorate
         });
 
         res.status(201).json({
@@ -84,9 +86,9 @@ exports.updateBookingOrder = async (req, res) => {
 // @access  Private (Admin)
 exports.updateBooking = async (req, res) => {
     try {
-        const { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, bookingDate } = req.body;
+        const { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, governorate, bookingDate } = req.body;
 
-        const updateFields = { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo };
+        const updateFields = { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, governorate };
         if (bookingDate) updateFields.bookingDate = new Date(bookingDate);
 
         const booking = await Booking.findByIdAndUpdate(
@@ -129,10 +131,11 @@ exports.deleteBooking = async (req, res) => {
 // @access  Private (Admin)
 exports.deleteManyBookings = async (req, res) => {
     try {
-        const { university, weekday } = req.body;
+        const { university, weekday, governorate } = req.body;
         const filter = {};
         if (university && university !== 'all') filter.university = university;
         if (weekday && weekday !== 'all') filter.weekday = weekday;
+        if (governorate && governorate !== 'all') filter.governorate = governorate;
 
         const result = await Booking.deleteMany(filter);
         res.status(200).json({ success: true, count: result.deletedCount });

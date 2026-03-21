@@ -56,6 +56,15 @@
                         </select>
                     </div>
 
+                    <!-- ✅ Governorate Filter -->
+                    <div class="filter-wrapper">
+                        <i class="bi bi-geo-alt filter-icon"></i>
+                        <select class="uni-select" [ngModel]="selectedGov()" (ngModelChange)="onGovChange($event)">
+                            <option value="all">{{ lang.isArabic() ? 'كل المحافظات' : 'All Governorates' }}</option>
+                            <option *ngFor="let gov of governorates()" [value]="gov.name">{{ gov.name }}</option>
+                        </select>
+                    </div>
+
                     <button class="toolbar-btn refresh-btn" (click)="fetchData()">
                         <i class="bi bi-arrow-clockwise"></i>
                         <span>{{ lang.t('dash_refresh') }}</span>

@@ -39,6 +39,10 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    governorate: {
+        type: String,
+        required: [true, 'Please provide governorate']
+    },
     order: {
         type: Number,
         default: 0
