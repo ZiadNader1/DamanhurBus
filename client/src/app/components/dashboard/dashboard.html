@@ -60,9 +60,9 @@
                         <i class="bi bi-arrow-clockwise"></i>
                         <span>{{ lang.t('dash_refresh') }}</span>
                     </button>
-                    <button class="toolbar-btn png-btn" (click)="exportToPNG()">
-                        <i class="bi bi-image"></i>
-                        <span>{{ lang.t('dash_export_png') }}</span>
+                    <button class="toolbar-btn png-btn" (click)="exportToPDF()">
+                        <i class="bi bi-file-pdf"></i>
+                        <span>{{ lang.isArabic() ? 'تصدير PDF' : 'Export PDF' }}</span>
                     </button>
                     <button class="toolbar-btn delete-all-btn" (click)="clearList()">
                         <i class="bi bi-trash-fill"></i>
@@ -100,11 +100,7 @@
                                         <span class="separator"> - </span>
                                         <span class="time-slot">{{ group.timeSlot }}</span>
                                     </div>
-                                    <button class="mini-png-btn no-print"
-                                        (click)="exportToPNG(group.busNumber + group.weekday + group.timeSlot)"
-                                        [title]="lang.t('dash_bus_export')">
-                                        <i class="bi bi-image"></i>
-                                    </button>
+
                                 </div>
                             </td>
                         </tr>
@@ -269,6 +265,8 @@
                                 <select #citySelect class="dest-input" style="flex: 1; padding: 10px;">
                                     <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لنقاط
                                         التحرك' : 'Select city for pickup' }}</option>
+                                    <option value="السكن الجامعي HQ">السكن الجامعي HQ</option>
+                                    <option value="EJUST">EJUST</option>
                                     <optgroup *ngFor="let mGov of governorates()" [label]="mGov.name">
                                         <option *ngFor="let city of mGov.cities" [value]="city">{{ city }}</option>
                                     </optgroup>

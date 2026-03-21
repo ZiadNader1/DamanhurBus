@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { API_URL } from '../../api-config';
 import { TranslationService } from '../../services/translation.service';
 
@@ -169,8 +170,12 @@ export class DashboardComponent implements OnInit {
         this.http.get<{ success: boolean, data: Booking[] }>(`${API_URL}/api/booking`, { headers })
             .subscribe({
                 next: (res) => {
-                    // ✅ Primary sort by order, then by date as fallback
-                    const sorted = res.data.sort((a, b) => (a.order - b.order) || new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime());
+                    // ✅ Sort: first registered = first in list (ascending by order, then by date for new bookings)
+                    const sorted = res.data.sort((a, b) => {
+                        const orderDiff = a.order - b.order;
+                        if (orderDiff !== 0) return orderDiff;
+                        return new Date(a.bookingDate).getTime() - new Date(b.bookingDate).getTime();
+                    });
                     this.bookings.set(sorted);
                     this.loading.set(false);
                 },
@@ -514,9 +519,8 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    exportToPNG(groupId?: string) {
-        const elementId = groupId ? `bus-group-${groupId}` : 'printable-area';
-        const element = document.getElementById(elementId);
+    exportToPDF() {
+        const element = document.getElementById('printable-area');
         if (!element) return;
 
         html2canvas(element, {
@@ -528,50 +532,32 @@ export class DashboardComponent implements OnInit {
                 const noPrintElements = clonedDoc.querySelectorAll('.no-print');
                 noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
 
+                const textElements = clonedDoc.querySelectorAll('td, th, span, .bus-title');
+                textElements.forEach(el => {
+                    (el as HTMLElement).style.color = '#ffffff';
+                });
+
                 const busTitles = clonedDoc.querySelectorAll('.bus-title');
                 busTitles.forEach(el => {
                     const htmlEl = el as HTMLElement;
                     htmlEl.style.direction = 'rtl';
                     htmlEl.style.textAlign = 'right';
-                    htmlEl.style.color = '#ffffff';
                     htmlEl.style.display = 'block';
-                });
-
-                // If exporting a group, ensure it looks like a table by adding headers
-                if (groupId) {
-                    const clonedGroup = clonedDoc.getElementById(elementId);
-                    if (clonedGroup) {
-                        const originalTable = document.querySelector('table');
-                        if (originalTable) {
-                            const originalHead = originalTable.querySelector('thead');
-                            if (originalHead) {
-                                const newHead = originalHead.cloneNode(true) as HTMLElement;
-                                // Style the injected header for visibility
-                                newHead.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                                newHead.querySelectorAll('th').forEach(th => {
-                                    th.style.color = '#94a3b8';
-                                    th.style.padding = '12px';
-                                });
-                                clonedGroup.insertBefore(newHead, clonedGroup.firstChild);
-                            }
-                        }
-                    }
-                }
-
-                // Ensure text visibility in light mode clones
-                const textElements = clonedDoc.querySelectorAll('.bus-group p, .bus-group span, .bus-group td, td');
-                textElements.forEach(el => {
-                    (el as HTMLElement).style.color = '#ffffff';
                 });
             }
         }).then(canvas => {
-            const link = document.createElement('a');
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            const pdf = new jsPDF({
+                orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                unit: 'px',
+                format: [canvas.width / 2, canvas.height / 2]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+
             const date = new Date();
-            const suffix = groupId ? `-مجموعة-${groupId}` : '';
-            const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}${suffix}.png`;
-            link.download = filename;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.pdf`;
+            pdf.save(filename);
         });
     }
 }
