@@ -3,18 +3,18 @@ const User = require('./models/User');
 const Governorate = require('./models/Governorate');
 
 const defaultDirectionalDays = [
-    { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-    { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-    { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-    { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-    { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-    { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-    { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: false, times: [] },
+    { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: false, times: [] },
+    { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: false, times: [] },
+    { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: false, times: [] },
+    { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: false, times: [] },
+    { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: false, times: [] },
     { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
     { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
 ];
@@ -125,6 +125,21 @@ module.exports = async () => {
                 if (exists.destinations) {
                     exists.destinations = undefined;
                     changed = true;
+                }
+
+                // Force wipe existing times to empty as per user request
+                if (exists.governorates) {
+                    exists.governorates.forEach(gov => {
+                        if (gov.directionalDays) {
+                            gov.directionalDays.forEach(day => {
+                                if (day.times && day.times.length > 0) {
+                                    day.times = [];
+                                    day.active = false;
+                                    changed = true;
+                                }
+                            });
+                        }
+                    });
                 }
 
                 if (changed) {
