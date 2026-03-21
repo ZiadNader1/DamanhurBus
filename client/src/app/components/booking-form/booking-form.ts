@@ -6,6 +6,14 @@ import { ChangeDetectorRef } from '@angular/core';
 import { API_URL } from '../../api-config';
 import { TranslationService } from '../../services/translation.service';
 
+interface Governorate {
+  _id: string;
+  name: string;
+  cities: string[];
+  active: boolean;
+}
+
+
 @Component({
   selector: 'app-booking-form',
   standalone: true,
@@ -24,6 +32,7 @@ export class BookingForm implements OnInit {
   };
 
   formData = {
+    governorate: '',
     weekday: '',
     timeSlot: '',
     university: '',
@@ -38,6 +47,7 @@ export class BookingForm implements OnInit {
   success = signal(false);
 
   // Dynamic lists from backend - using signals for reactivity
+  governorates = signal<Governorate[]>([]);
   directionalDays = signal<any[]>([]);
   timeSlots = signal<string[]>([]);
   pickupLocations = signal<string[]>([]);
@@ -45,6 +55,31 @@ export class BookingForm implements OnInit {
 
   originalPickupLocations: string[] = [];
   originalDestinations: string[] = [];
+
+  // Filtered dropdowns based on Governorate
+  filteredPickupLocations = computed(() => {
+    const allLocs = this.pickupLocations();
+    const govId = this.formData.governorate;
+    if (!govId) return allLocs;
+
+    const gov = this.governorates().find(g => g._id === govId);
+    if (!gov) return allLocs;
+
+    const allCities = new Set(this.governorates().flatMap(g => g.cities));
+    return allLocs.filter(loc => gov.cities.includes(loc) || !allCities.has(loc));
+  });
+
+  filteredDestinations = computed(() => {
+    const allLocs = this.destinations();
+    const govId = this.formData.governorate;
+    if (!govId) return allLocs;
+
+    const gov = this.governorates().find(g => g._id === govId);
+    if (!gov) return allLocs;
+
+    const allCities = new Set(this.governorates().flatMap(g => g.cities));
+    return allLocs.filter(loc => gov.cities.includes(loc) || !allCities.has(loc));
+  });
 
   universities = computed(() => {
     return this.lang.isArabic()
@@ -83,10 +118,28 @@ export class BookingForm implements OnInit {
   };
 
   ngOnInit() {
+    this.fetchGovernorates();
     if (this.preselectedUniversity) {
       this.formData.university = this.universityNames[this.preselectedUniversity] || '';
       this.fetchUniversitySettings(this.preselectedUniversity);
     }
+  }
+
+  fetchGovernorates() {
+    this.http.get<{ success: boolean, data: Governorate[] }>(`${API_URL}/api/governorates`)
+      .subscribe({
+        next: (res) => {
+          this.governorates.set(res.data || []);
+        },
+        error: (err) => console.error('Failed to load governorates', err)
+      });
+  }
+
+  onGovernorateChange() {
+    this.formData.departureFrom = '';
+    this.formData.departureTo = '';
+    this.validate();
+    this.cdr.detectChanges();
   }
 
   onUniversityChange() {
@@ -177,6 +230,7 @@ export class BookingForm implements OnInit {
 
   validate() {
     const newErrors: any = {};
+    if (!this.formData.governorate) newErrors.governorate = this.lang.isArabic() ? 'يرجى اختيار المحافظة' : 'Please select governorate';
     if (!this.formData.weekday) newErrors.weekday = this.lang.t('err_day');
     if (!this.formData.timeSlot) newErrors.timeSlot = this.lang.t('err_time');
     if (!this.formData.university) newErrors.university = this.lang.t('err_university');
@@ -217,6 +271,7 @@ export class BookingForm implements OnInit {
     const university = this.formData.university;
     const dest = this.formData.departureTo;
     this.formData = {
+      governorate: '',
       weekday: '',
       timeSlot: '',
       university: this.preselectedUniversity ? university : '',

@@ -22,6 +22,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bus', require('./routes/bus'));
 app.use('/api/booking', require('./routes/booking'));
 app.use('/api/settings', require('./routes/universitySettings'));
+app.use('/api/governorates', require('./routes/governorate'));
 
 app.get('/', (req, res) => {
     res.send('Damanhour Bus API is running...');

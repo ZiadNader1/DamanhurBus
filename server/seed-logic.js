@@ -1,8 +1,32 @@
 const UniversityConfig = require('./models/UniversityConfig');
 const User = require('./models/User');
+const Governorate = require('./models/Governorate');
+
+const governorateData = [
+    {
+        name: 'البحيرة',
+        cities: ['دمنهور', 'كفر الدوار', 'ايتاي', 'ابو حمص']
+    },
+    {
+        name: 'كفر الشيخ',
+        cities: ['كفر الشيخ', 'دسوق']
+    },
+    {
+        name: 'طنطا',
+        cities: ['طنطا']
+    },
+    {
+        name: 'بورسعيد',
+        cities: ['بورسعيد', 'دمياط']
+    }
+];
 
 const universityData = [
     {
+        // ... university data continues below
+
+        // We will replace up to the start of module.exports
+
         universityId: 'ejust',
         universityName: 'الجامعة المصرية اليابانية',
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
@@ -95,6 +119,17 @@ const universityData = [
 module.exports = async () => {
     try {
         console.log('Seeding database...');
+
+        // 0. Seed Governorates
+        for (const govData of governorateData) {
+            const exists = await Governorate.findOne({ name: govData.name });
+            if (!exists) {
+                await Governorate.create(govData);
+                console.log(`✅ Seeded Governorate ${govData.name}`);
+            } else {
+                console.log(`ℹ️ Governorate ${govData.name} exists, skipping.`);
+            }
+        }
 
         // 1. Seed University Configs
         for (const data of universityData) {

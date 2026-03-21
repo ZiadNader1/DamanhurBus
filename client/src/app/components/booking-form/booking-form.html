@@ -38,13 +38,26 @@
                 <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
             </div>
 
+            <!-- Governorate -->
+            <div class="form-group" [class.has-error]="errors().governorate">
+                <label for="governorate"><i class="bi bi-map"></i> {{ lang.isArabic() ? 'المحافظة' : 'Governorate'
+                    }}</label>
+                <select id="governorate" name="governorate" [(ngModel)]="formData.governorate"
+                    (change)="onGovernorateChange()">
+                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر المحافظة' : 'Select Governorate' }}
+                    </option>
+                    <option *ngFor="let gov of governorates()" [value]="gov._id">{{gov.name}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().governorate">{{errors().governorate}}</span>
+            </div>
+
             <!-- Departure From (Select) -->
             <div class="form-group" [class.has-error]="errors().departureFrom">
                 <label for="departureFrom"><i class="bi bi-geo-alt"></i> {{ lang.t('form_from') }}</label>
                 <select id="departureFrom" name="departureFrom" [(ngModel)]="formData.departureFrom"
-                    (change)="validate()">
+                    (change)="validate()" [disabled]="!formData.governorate">
                     <option value="" disabled selected>{{ lang.t('form_from_ph') }}</option>
-                    <option *ngFor="let loc of pickupLocations()" [value]="loc">{{loc}}</option>
+                    <option *ngFor="let loc of filteredPickupLocations()" [value]="loc">{{loc}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().departureFrom">{{errors().departureFrom}}</span>
             </div>
@@ -52,9 +65,10 @@
             <!-- Departure To (Select) -->
             <div class="form-group" [class.has-error]="errors().departureTo">
                 <label for="departureTo"><i class="bi bi-geo-alt-fill"></i> {{ lang.t('form_to') }}</label>
-                <select id="departureTo" name="departureTo" [(ngModel)]="formData.departureTo" (change)="validate()">
+                <select id="departureTo" name="departureTo" [(ngModel)]="formData.departureTo" (change)="validate()"
+                    [disabled]="!formData.governorate">
                     <option value="" disabled selected>{{ lang.t('form_to_ph') }}</option>
-                    <option *ngFor="let loc of destinations()" [value]="loc">{{loc}}</option>
+                    <option *ngFor="let loc of filteredDestinations()" [value]="loc">{{loc}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().departureTo">{{errors().departureTo}}</span>
             </div>

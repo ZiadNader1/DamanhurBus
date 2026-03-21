@@ -14,6 +14,9 @@
             <button [class.active]="activeTab === 'settings'" (click)="activeTab = 'settings'">
                 <i class="bi bi-gear"></i> {{ lang.t('dash_settings') }}
             </button>
+            <button [class.active]="activeTab === 'governorates'" (click)="activeTab = 'governorates'">
+                <i class="bi bi-geo-alt"></i> {{ lang.isArabic() ? 'المحافظات والمدن' : 'Governorates' }}
+            </button>
         </nav>
     </aside>
 
@@ -24,7 +27,12 @@
                 <button class="mobile-menu-toggle" (click)="isSidebarOpen = !isSidebarOpen">
                     <i class="bi bi-list"></i>
                 </button>
-                <h2>{{ activeTab === 'bookings' ? lang.t('dash_list_title') : lang.t('dash_uni_settings') }}</h2>
+                <h2>
+                    {{ activeTab === 'bookings' ? lang.t('dash_list_title') :
+                    activeTab === 'settings' ? lang.t('dash_uni_settings') :
+                    (lang.isArabic() ? 'إدارة المحافظات والمدن' : 'Governorates Management')
+                    }}
+                </h2>
             </div>
             <div class="header-actions" *ngIf="activeTab === 'bookings'">
                 <div class="actions">
@@ -186,6 +194,45 @@
             </div>
         </div>
 
+        <!-- Governorates Content -->
+        <div class="content-body" *ngIf="activeTab === 'governorates'">
+            <div class="header-actions" style="margin-bottom: 20px;">
+                <button class="toolbar-btn refresh-btn" (click)="addGovernorate()">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>{{ lang.isArabic() ? 'إضافة محافظة جديدة' : 'Add New Governorate' }}</span>
+                </button>
+            </div>
+
+            <div class="settings-grid">
+                <div class="uni-config-card" *ngFor="let gov of governorates()">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>
+                            <input [(ngModel)]="gov.name" class="dest-input"
+                                style="width: 200px; font-size: 1.1em; padding: 5px; background: transparent; color: white;">
+                        </h3>
+                        <button class="btn-icon delete-btn" (click)="deleteGovernorate(gov._id)"
+                            [title]="lang.isArabic() ? 'حذف المحافظة' : 'Delete Governorate'">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="setting-section">
+                        <h4>{{ lang.isArabic() ? 'المدن التابعة' : 'Cities' }}</h4>
+                        <div class="tag-list">
+                            <span class="tag" *ngFor="let city of gov.cities; let i = index">
+                                <span class="tag-text">{{ city }}</span>
+                                <i class="bi bi-x remove-icon" (click)="removeCityFromGovernorate(gov, i)"></i>
+                            </span>
+                            <button class="add-tag" (click)="addCityToGovernorate(gov)">+ {{ lang.isArabic() ? 'إضافة
+                                مدينة' : 'Add City' }}</button>
+                        </div>
+                    </div>
+
+                    <button class="save-btn" (click)="updateGovernorate(gov)">{{ lang.t('dash_save') }}</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Content -->
         <div class="content-body" *ngIf="activeTab === 'settings'">
             <div class="settings-grid">
@@ -203,7 +250,21 @@
                                 <span class="tag-text">{{ loc.name }}</span>
                                 <i class="bi bi-x remove-icon" (click)="removeLocation(config, i)"></i>
                             </span>
-                            <button class="add-tag" (click)="addLocation(config)">+ {{ lang.t('dash_add') }}</button>
+                            <button class="add-tag" (click)="addLocation(config)" style="display: none;">+ {{
+                                lang.t('dash_add') }}</button>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
+                            <select #citySelect class="dest-input" style="flex: 1; padding: 10px;">
+                                <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لنقاط
+                                    التحرك' : 'Select city for pickup' }}</option>
+                                <optgroup *ngFor="let gov of governorates()" [label]="gov.name">
+                                    <option *ngFor="let city of gov.cities" [value]="city">{{ city }}</option>
+                                </optgroup>
+                            </select>
+                            <button
+                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                (click)="addLocationFromSelect(config, citySelect.value); citySelect.value=''">+ {{
+                                lang.t('dash_add') }}</button>
                         </div>
                     </div>
 
@@ -252,7 +313,23 @@
                                 <span class="tag-text">{{ dest.name }}</span>
                                 <i class="bi bi-x remove-icon" (click)="removeDestination(config, i)"></i>
                             </span>
-                            <button class="add-tag" (click)="addDestination(config)">+ {{ lang.t('dash_add') }}</button>
+                            <button class="add-tag" (click)="addDestination(config)" style="display: none;">+ {{
+                                lang.t('dash_add') }}</button>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
+                            <select #destSelect class="dest-input" style="flex: 1; padding: 10px;">
+                                <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لوجهات
+                                    العودة' : 'Select city for destination' }}</option>
+                                <option value="السكن الجامعي HQ">السكن الجامعي HQ</option>
+                                <option value="جامعة العلمين الدولية">جامعة العلمين الدولية</option>
+                                <optgroup *ngFor="let gov of governorates()" [label]="gov.name">
+                                    <option *ngFor="let city of gov.cities" [value]="city">{{ city }}</option>
+                                </optgroup>
+                            </select>
+                            <button
+                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                (click)="addDestinationFromSelect(config, destSelect.value); destSelect.value=''">+ {{
+                                lang.t('dash_add') }}</button>
                         </div>
                     </div>
 

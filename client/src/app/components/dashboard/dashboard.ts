@@ -19,6 +19,14 @@ interface Booking {
     order: number;
 }
 
+interface Governorate {
+    _id: string;
+    name: string;
+    cities: string[];
+    active: boolean;
+}
+
+
 interface DirectionalDay {
     id: string;
     name: string;
@@ -54,6 +62,7 @@ export class DashboardComponent implements OnInit {
     activeTab = 'bookings';
     bookings = signal<Booking[]>([]);
     universityConfigs = signal<UniversityConfig[]>([]);
+    governorates = signal<Governorate[]>([]);
     loading = signal(false);
 
     selectedUni = signal('all');
@@ -175,6 +184,15 @@ export class DashboardComponent implements OnInit {
                 },
                 error: () => { }
             });
+
+        // Fetch Governorates
+        this.http.get<{ success: boolean, data: Governorate[] }>(`${API_URL}/api/governorates`, { headers })
+            .subscribe({
+                next: (res) => {
+                    this.governorates.set(res.data || []);
+                },
+                error: () => { }
+            });
     }
 
     updateSetting(config: UniversityConfig) {
@@ -194,6 +212,12 @@ export class DashboardComponent implements OnInit {
                     alert('حدث خطأ أثناء التحديث: ' + (err.error?.message || err.message));
                 }
             });
+    }
+
+    addLocationFromSelect(config: UniversityConfig, city: string) {
+        if (city && city.trim()) {
+            config.pickupLocations.push({ name: city.trim(), active: true });
+        }
     }
 
     addLocation(config: UniversityConfig) {
@@ -246,6 +270,13 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    addDestinationFromSelect(config: UniversityConfig, dest: string) {
+        if (dest && dest.trim()) {
+            if (!config.destinations) config.destinations = [];
+            config.destinations.push({ name: dest.trim(), active: true });
+        }
+    }
+
     addDestination(config: UniversityConfig) {
         const dest = prompt(this.lang.isArabic() ? 'أدخل الوجهة الجديدة:' : 'Enter new destination:');
         if (dest) {
@@ -260,6 +291,55 @@ export class DashboardComponent implements OnInit {
 
     toggleDestination(dest: { name: string; active: boolean }) {
         dest.active = !dest.active;
+    }
+
+    // --- Governorates & Cities Management ---
+
+    addGovernorate() {
+        const title = prompt(this.lang.isArabic() ? 'أدخل اسم المحافظة:' : 'Enter Governorate Name:');
+        if (!title) return;
+
+        this.http.post(`${API_URL}/api/governorates`, { name: title }, { headers: this.getHeaders() })
+            .subscribe({
+                next: () => {
+                    alert('تم إضافة المحافظة بنجاح');
+                    this.fetchData();
+                },
+                error: (err) => alert('خطأ: ' + (err.error?.message || err.message))
+            });
+    }
+
+    deleteGovernorate(id: string) {
+        if (!confirm(this.lang.isArabic() ? 'هل أنت متأكد من حذف هذه المحافظة؟' : 'Are you sure you want to delete this governorate?')) return;
+        this.http.delete(`${API_URL}/api/governorates/${id}`, { headers: this.getHeaders() })
+            .subscribe({
+                next: () => {
+                    this.fetchData();
+                },
+                error: (err) => alert('خطأ: ' + (err.error?.message || err.message))
+            });
+    }
+
+    updateGovernorate(gov: Governorate) {
+        this.http.put(`${API_URL}/api/governorates/${gov._id}`, gov, { headers: this.getHeaders() })
+            .subscribe({
+                next: () => {
+                    alert('تم الحفظ بنجاح');
+                },
+                error: (err) => alert('خطأ: ' + (err.error?.message || err.message))
+            });
+    }
+
+    addCityToGovernorate(gov: Governorate) {
+        const city = prompt(this.lang.isArabic() ? 'أدخل اسم المدينة الجديدة:' : 'Enter new city:');
+        if (city && city.trim()) {
+            if (!gov.cities) gov.cities = [];
+            gov.cities.push(city.trim());
+        }
+    }
+
+    removeCityFromGovernorate(gov: Governorate, index: number) {
+        gov.cities.splice(index, 1);
     }
 
     moveBooking(bookingId: string, direction: 'up' | 'down') {
