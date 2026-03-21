@@ -533,6 +533,16 @@ export class DashboardComponent implements OnInit {
         const element = document.getElementById('printable-area');
         if (!element) return;
 
+        // Save original styles
+        const originalWidth = element.style.width;
+        const originalPosition = element.style.position;
+        const originalLeft = element.style.left;
+
+        // Force a wider width for better capture on mobile
+        element.style.width = '1200px';
+        element.style.position = 'absolute';
+        element.style.left = '-9999px';
+
         html2canvas(element, {
             backgroundColor: '#0a0f1d',
             scale: 2,
@@ -546,24 +556,22 @@ export class DashboardComponent implements OnInit {
                 textElements.forEach(el => {
                     (el as HTMLElement).style.color = '#ffffff';
                 });
-
-                const busTitles = clonedDoc.querySelectorAll('.bus-title');
-                busTitles.forEach(el => {
-                    const htmlEl = el as HTMLElement;
-                    htmlEl.style.direction = 'rtl';
-                    htmlEl.style.textAlign = 'right';
-                    htmlEl.style.display = 'block';
-                });
-            }
+            },
+            allowTaint: true,
+            windowWidth: 1200
         }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            const pdf = new jsPDF({
-                orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-                unit: 'px',
-                format: [canvas.width / 2, canvas.height / 2]
-            });
+            // Restore original styles
+            element.style.width = originalWidth;
+            element.style.position = originalPosition;
+            element.style.left = originalLeft;
 
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
             const date = new Date();
             const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.pdf`;
