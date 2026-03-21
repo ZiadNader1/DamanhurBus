@@ -23,7 +23,6 @@ interface Governorate {
     _id: string;
     name: string;
     cities: string[];
-    directionalDays: DirectionalDay[];
     active: boolean;
 }
 
@@ -36,11 +35,17 @@ interface DirectionalDay {
     times: string[];
 }
 
+interface GovernorateConfig {
+    governorateName: string;
+    pickupLocations: { name: string; active: boolean }[];
+    destinations: { name: string; active: boolean }[];
+    directionalDays: DirectionalDay[];
+}
+
 interface UniversityConfig {
     universityId: string;
     universityName: string;
-    pickupLocations: { name: string; active: boolean }[];
-    destinations: { name: string; active: boolean }[];
+    governorates: GovernorateConfig[];
 }
 
 interface GroupedBookings {
@@ -73,12 +78,21 @@ export class DashboardComponent implements OnInit {
     editingBookingData: any = {};
     editingAvailableTimes: string[] = [];
 
+    activeGovPerUni: Record<string, string> = {};
+
+    getActiveGovConfig(config: UniversityConfig): GovernorateConfig | undefined {
+        const govName = this.activeGovPerUni[config.universityId];
+        return config.governorates?.find(g => g.governorateName === govName);
+    }
+
     // ✅ Get days available for the filter
     availableDaysForFilter = computed(() => {
-        // Collect from governorates since days are now global per governorate
+        // Collect from university configs governorates
         const allDays = new Set<string>();
-        this.governorates().forEach(g => {
-            g.directionalDays?.filter((d: DirectionalDay) => d.active).forEach((d: DirectionalDay) => allDays.add(d.name));
+        this.universityConfigs().forEach(u => {
+            u.governorates?.forEach(g => {
+                g.directionalDays?.filter((d: DirectionalDay) => d.active).forEach((d: DirectionalDay) => allDays.add(d.name));
+            });
         });
         return Array.from(allDays);
     });
@@ -166,15 +180,24 @@ export class DashboardComponent implements OnInit {
         this.http.get<{ success: boolean, data: UniversityConfig[] }>(`${API_URL}/api/settings`, { headers })
             .subscribe({
                 next: (res) => {
-                    const sanitized = (res.data || []).map(config => ({
-                        ...config,
-                        pickupLocations: (config.pickupLocations || []).map((l: any) =>
-                            typeof l === 'string' ? { name: l, active: true } : l
-                        ),
-                        destinations: (config.destinations || []).map((d: any) =>
-                            typeof d === 'string' ? { name: d, active: true } : d
-                        )
-                    }));
+                    const sanitized = (res.data || []).map(config => {
+                        if (!this.activeGovPerUni[config.universityId] && config.governorates && config.governorates.length > 0) {
+                            this.activeGovPerUni[config.universityId] = config.governorates[0].governorateName;
+                        }
+
+                        return {
+                            ...config,
+                            governorates: (config.governorates || []).map((gov: any) => ({
+                                ...gov,
+                                pickupLocations: (gov.pickupLocations || []).map((l: any) =>
+                                    typeof l === 'string' ? { name: l, active: true } : l
+                                ),
+                                destinations: (gov.destinations || []).map((d: any) =>
+                                    typeof d === 'string' ? { name: d, active: true } : d
+                                )
+                            }))
+                        };
+                    });
                     this.universityConfigs.set(sanitized);
                 },
                 error: () => { }
@@ -209,28 +232,28 @@ export class DashboardComponent implements OnInit {
             });
     }
 
-    addLocationFromSelect(config: UniversityConfig, city: string) {
+    addLocationFromSelect(govConf: GovernorateConfig, city: string) {
         if (city && city.trim()) {
-            config.pickupLocations.push({ name: city.trim(), active: true });
+            govConf.pickupLocations.push({ name: city.trim(), active: true });
         }
     }
 
-    addLocation(config: UniversityConfig) {
+    addLocation(govConf: GovernorateConfig) {
         const loc = prompt(this.lang.isArabic() ? 'أدخل اسم نقطة التحرك الجديدة:' : 'Enter new pickup location:');
         if (loc) {
-            config.pickupLocations.push({ name: loc, active: true });
+            govConf.pickupLocations.push({ name: loc, active: true });
         }
     }
 
-    removeLocation(config: UniversityConfig, index: number) {
-        config.pickupLocations.splice(index, 1);
+    removeLocation(govConf: GovernorateConfig, index: number) {
+        govConf.pickupLocations.splice(index, 1);
     }
 
     toggleLocation(loc: { name: string; active: boolean }) {
         loc.active = !loc.active;
     }
 
-    addSpecificTime(gov: Governorate, dayId: string, time24: string) {
+    addSpecificTime(govConf: GovernorateConfig, dayId: string, time24: string) {
         if (!dayId) {
             alert(this.lang.t('err_day'));
             return;
@@ -249,8 +272,8 @@ export class DashboardComponent implements OnInit {
         const paddedHours = hours.toString().padStart(2, '0');
         const formattedTime = `${paddedHours}:${minutesStr} ${ampm}`;
 
-        if (!gov.directionalDays) gov.directionalDays = [];
-        const day = gov.directionalDays.find(d => d.id === dayId);
+        if (!govConf.directionalDays) govConf.directionalDays = [];
+        const day = govConf.directionalDays.find(d => d.id === dayId);
         if (day) {
             if (!day.times) day.times = [];
             if (!day.times.includes(formattedTime)) {
@@ -267,23 +290,23 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    addDestinationFromSelect(config: UniversityConfig, dest: string) {
+    addDestinationFromSelect(govConf: GovernorateConfig, dest: string) {
         if (dest && dest.trim()) {
-            if (!config.destinations) config.destinations = [];
-            config.destinations.push({ name: dest.trim(), active: true });
+            if (!govConf.destinations) govConf.destinations = [];
+            govConf.destinations.push({ name: dest.trim(), active: true });
         }
     }
 
-    addDestination(config: UniversityConfig) {
+    addDestination(govConf: GovernorateConfig) {
         const dest = prompt(this.lang.isArabic() ? 'أدخل الوجهة الجديدة:' : 'Enter new destination:');
         if (dest) {
-            if (!config.destinations) config.destinations = [];
-            config.destinations.push({ name: dest, active: true });
+            if (!govConf.destinations) govConf.destinations = [];
+            govConf.destinations.push({ name: dest, active: true });
         }
     }
 
-    removeDestination(config: UniversityConfig, index: number) {
-        config.destinations.splice(index, 1);
+    removeDestination(govConf: GovernorateConfig, index: number) {
+        govConf.destinations.splice(index, 1);
     }
 
     toggleDestination(dest: { name: string; active: boolean }) {

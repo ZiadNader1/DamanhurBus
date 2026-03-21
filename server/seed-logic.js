@@ -20,52 +20,66 @@ const defaultDirectionalDays = [
 ];
 
 const governorateData = [
-    {
-        name: 'البحيرة',
-        cities: ['دمنهور', 'كفر الدوار', 'ايتاي', 'ابو حمص'],
-        directionalDays: defaultDirectionalDays
-    },
-    {
-        name: 'كفر الشيخ',
-        cities: ['كفر الشيخ', 'دسوق'],
-        directionalDays: defaultDirectionalDays
-    },
-    {
-        name: 'طنطا',
-        cities: ['طنطا'],
-        directionalDays: defaultDirectionalDays
-    },
-    {
-        name: 'بورسعيد',
-        cities: ['بورسعيد', 'دمياط'],
-        directionalDays: defaultDirectionalDays
-    }
+    { name: 'البحيرة', cities: ['دمنهور', 'كفر الدوار', 'ايتاي', 'ابو حمص'] },
+    { name: 'كفر الشيخ', cities: ['كفر الشيخ', 'دسوق'] },
+    { name: 'طنطا', cities: ['طنطا'] },
+    { name: 'بورسعيد', cities: ['بورسعيد', 'دمياط'] }
 ];
+
+const generateGovConfigs = (hqDest) => {
+    return [
+        {
+            governorateName: 'البحيرة',
+            pickupLocations: [
+                { name: 'دمنهور مدخل المحافظة', active: true },
+                { name: 'إيتاي شارع فراويلة', active: true },
+                { name: 'أبو حمص عند الكوبري', active: true },
+                { name: 'كفر الدوار مدخل العمدة', active: true }
+            ],
+            destinations: [{ name: hqDest, active: true }],
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+        },
+        {
+            governorateName: 'كفر الشيخ',
+            pickupLocations: [{ name: 'كفر الشيخ', active: true }, { name: 'دسوق', active: true }],
+            destinations: [{ name: hqDest, active: true }],
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+        },
+        {
+            governorateName: 'طنطا',
+            pickupLocations: [{ name: 'طنطا', active: true }],
+            destinations: [{ name: hqDest, active: true }],
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+        },
+        {
+            governorateName: 'بورسعيد',
+            pickupLocations: [{ name: 'بورسعيد', active: true }, { name: 'دمياط', active: true }],
+            destinations: [{ name: hqDest, active: true }],
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+        }
+    ];
+};
 
 const universityData = [
     {
         universityId: 'ejust',
         universityName: 'الجامعة المصرية اليابانية',
-        pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        destinations: ['السكن الجامعي HQ']
+        governorates: generateGovConfigs('السكن الجامعي HQ')
     },
     {
         universityId: 'alamein',
         universityName: 'جامعة العلمين الدولية',
-        pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        destinations: ['جامعة العلمين الدولية']
+        governorates: generateGovConfigs('جامعة العلمين الدولية')
     },
     {
         universityId: 'menofia',
         universityName: 'جامعة المنوفية الأهلية',
-        pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        destinations: ['السكن الجامعي HQ']
+        governorates: generateGovConfigs('السكن الجامعي HQ')
     },
     {
         universityId: 'damanhour-ahlia',
         universityName: 'جامعة دمنهور الأهلية',
-        pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        destinations: ['السكن الجامعي HQ']
+        governorates: generateGovConfigs('السكن الجامعي HQ')
     }
 ];
 
@@ -80,13 +94,13 @@ module.exports = async () => {
                 await Governorate.create(govData);
                 console.log(`✅ Seeded Governorate ${govData.name}`);
             } else {
-                // Update existing governorate with directionalDays if they don't have them
-                if (!exists.directionalDays || exists.directionalDays.length === 0) {
-                    exists.directionalDays = govData.directionalDays;
+                // If they incorrectly have directionalDays from the previous mistake, remove them
+                if (exists.directionalDays) {
+                    exists.directionalDays = undefined;
                     await exists.save();
-                    console.log(`✅ Updated Governorate ${govData.name} with directionalDays`);
+                    console.log(`✅ Removed tracking directionalDays from Governorate ${govData.name}`);
                 } else {
-                    console.log(`ℹ️ Governorate ${govData.name} already has directionalDays, skipping.`);
+                    console.log(`ℹ️ Governorate ${govData.name} exists, skipping.`);
                 }
             }
         }
@@ -98,11 +112,26 @@ module.exports = async () => {
                 await UniversityConfig.create(data);
                 console.log(`✅ Seeded ${data.universityId}`);
             } else {
-                // Remove directionalDays from existing university config if it exists
-                if (exists.directionalDays) {
-                    exists.directionalDays = undefined;
+                let changed = false;
+                // If we upgraded the schema and they don't have governorates mapped, or it's empty
+                if (!exists.governorates || exists.governorates.length === 0) {
+                    exists.governorates = data.governorates;
+                    changed = true;
+                }
+                if (exists.pickupLocations) {
+                    exists.pickupLocations = undefined;
+                    changed = true;
+                }
+                if (exists.destinations) {
+                    exists.destinations = undefined;
+                    changed = true;
+                }
+
+                if (changed) {
                     await exists.save();
-                    console.log(`✅ Removed tracking directionalDays from University ${data.universityId}`);
+                    console.log(`✅ Migrated University ${data.universityId} to hierarchical Governorates structure!`);
+                } else {
+                    console.log(`ℹ️ ${data.universityId} exists with governorates, skipping.`);
                 }
             }
         }

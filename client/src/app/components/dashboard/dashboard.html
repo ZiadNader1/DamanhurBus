@@ -228,40 +228,6 @@
                         </div>
                     </div>
 
-                    <div class="setting-section">
-                        <h4>{{ lang.t('dash_directional') }}</h4>
-                        <div class="add-time-form"
-                            style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px;">
-                            <select #daySelect class="dest-input" style="flex: 1; min-width: 200px; padding: 12px;">
-                                <option value="" disabled selected>{{ lang.t('dash_choose_day') }}</option>
-                                <option *ngFor="let day of gov.directionalDays" [value]="day.id">{{ day.name }}
-                                </option>
-                            </select>
-                            <input type="time" #timeInput class="dest-input" style="width: auto; padding: 12px;">
-                            <button
-                                style="background: #2563eb; color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;"
-                                (click)="addSpecificTime(gov, daySelect.value, timeInput.value); daySelect.value=''; timeInput.value=''">{{
-                                lang.t('dash_add_time') }}</button>
-                        </div>
-
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <ng-container *ngFor="let day of gov.directionalDays">
-                                <div *ngIf="day.times && day.times.length > 0"
-                                    style="display: flex; align-items: flex-start; gap: 15px; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
-                                    <span
-                                        style="font-weight: bold; min-width: 110px; color: #f59e0b; margin-top: 5px;">{{
-                                        day.name }}</span>
-                                    <div class="tag-list" style="flex: 1;">
-                                        <span class="tag" *ngFor="let time of day.times; let i = index">
-                                            {{ time }}
-                                            <i class="bi bi-x" (click)="removeTime(day, i)"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </div>
-
                     <button class="save-btn" (click)="updateGovernorate(gov)">{{ lang.t('dash_save') }}</button>
                 </div>
             </div>
@@ -273,66 +239,117 @@
                 <div class="uni-config-card" *ngFor="let config of universityConfigs()">
                     <h3>{{ config.universityName }}</h3>
 
-                    <div class="setting-section">
-                        <h4>{{ lang.t('dash_location') }}</h4>
-                        <div class="tag-list">
-                            <span class="tag" *ngFor="let loc of config.pickupLocations; let i = index"
-                                [class.inactive]="!loc.active">
-                                <i class="bi toggle-icon" [class.bi-eye]="loc.active" [class.bi-eye-slash]="!loc.active"
-                                    (click)="toggleLocation(loc)"
-                                    [title]="loc.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
-                                <span class="tag-text">{{ loc.name }}</span>
-                                <i class="bi bi-x remove-icon" (click)="removeLocation(config, i)"></i>
-                            </span>
-                            <button class="add-tag" (click)="addLocation(config)" style="display: none;">+ {{
-                                lang.t('dash_add') }}</button>
-                        </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
-                            <select #citySelect class="dest-input" style="flex: 1; padding: 10px;">
-                                <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لنقاط
-                                    التحرك' : 'Select city for pickup' }}</option>
-                                <optgroup *ngFor="let gov of governorates()" [label]="gov.name">
-                                    <option *ngFor="let city of gov.cities" [value]="city">{{ city }}</option>
-                                </optgroup>
-                            </select>
-                            <button
-                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
-                                (click)="addLocationFromSelect(config, citySelect.value); citySelect.value=''">+ {{
-                                lang.t('dash_add') }}</button>
-                        </div>
+                    <div *ngIf="config.governorates.length > 0" class="gov-selector"
+                        style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <label style="color: #94a3b8; font-size: 0.9em; margin-bottom: 8px; display: block;">{{
+                            lang.isArabic() ? 'إعدادات خاصة بمحافظة:' : 'Settings specific to Governorate:' }}</label>
+                        <select class="dest-input" [(ngModel)]="activeGovPerUni[config.universityId]"
+                            style="width: 100%; padding: 12px; font-size: 16px; font-weight: bold;">
+                            <option *ngFor="let gov of config.governorates" [value]="gov.governorateName">
+                                {{gov.governorateName}}</option>
+                        </select>
                     </div>
 
+                    <ng-container *ngIf="getActiveGovConfig(config) as activeGov">
+                        <div class="setting-section">
+                            <h4>{{ lang.t('dash_location') }}</h4>
+                            <div class="tag-list">
+                                <span class="tag" *ngFor="let loc of activeGov.pickupLocations; let i = index"
+                                    [class.inactive]="!loc.active">
+                                    <i class="bi toggle-icon" [class.bi-eye]="loc.active"
+                                        [class.bi-eye-slash]="!loc.active" (click)="toggleLocation(loc)"
+                                        [title]="loc.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
+                                    <span class="tag-text">{{ loc.name }}</span>
+                                    <i class="bi bi-x remove-icon" (click)="removeLocation(activeGov, i)"></i>
+                                </span>
+                                <button class="add-tag" (click)="addLocation(activeGov)" style="display: none;">+ {{
+                                    lang.t('dash_add') }}</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
+                                <select #citySelect class="dest-input" style="flex: 1; padding: 10px;">
+                                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لنقاط
+                                        التحرك' : 'Select city for pickup' }}</option>
+                                    <optgroup *ngFor="let mGov of governorates()" [label]="mGov.name">
+                                        <option *ngFor="let city of mGov.cities" [value]="city">{{ city }}</option>
+                                    </optgroup>
+                                </select>
+                                <button
+                                    style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                    (click)="addLocationFromSelect(activeGov, citySelect.value); citySelect.value=''">+
+                                    {{
+                                    lang.t('dash_add') }}</button>
+                            </div>
+                        </div>
 
-                    <div class="setting-section">
-                        <h4>{{ lang.t('dash_destinations') }}</h4>
-                        <div class="tag-list">
-                            <span class="tag" *ngFor="let dest of config.destinations; let i = index"
-                                [class.inactive]="!dest.active">
-                                <i class="bi toggle-icon" [class.bi-eye]="dest.active"
-                                    [class.bi-eye-slash]="!dest.active" (click)="toggleDestination(dest)"
-                                    [title]="dest.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
-                                <span class="tag-text">{{ dest.name }}</span>
-                                <i class="bi bi-x remove-icon" (click)="removeDestination(config, i)"></i>
-                            </span>
-                            <button class="add-tag" (click)="addDestination(config)" style="display: none;">+ {{
-                                lang.t('dash_add') }}</button>
+
+                        <div class="setting-section">
+                            <h4>{{ lang.t('dash_destinations') }}</h4>
+                            <div class="tag-list">
+                                <span class="tag" *ngFor="let dest of activeGov.destinations; let i = index"
+                                    [class.inactive]="!dest.active">
+                                    <i class="bi toggle-icon" [class.bi-eye]="dest.active"
+                                        [class.bi-eye-slash]="!dest.active" (click)="toggleDestination(dest)"
+                                        [title]="dest.active ? lang.t('dash_inactive') : lang.t('dash_active')"></i>
+                                    <span class="tag-text">{{ dest.name }}</span>
+                                    <i class="bi bi-x remove-icon" (click)="removeDestination(activeGov, i)"></i>
+                                </span>
+                                <button class="add-tag" (click)="addDestination(activeGov)" style="display: none;">+ {{
+                                    lang.t('dash_add') }}</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
+                                <select #destSelect class="dest-input" style="flex: 1; padding: 10px;">
+                                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لوجهات
+                                        العودة' : 'Select city for destination' }}</option>
+                                    <option value="السكن الجامعي HQ">السكن الجامعي HQ</option>
+                                    <option value="جامعة العلمين الدولية">جامعة العلمين الدولية</option>
+                                    <optgroup *ngFor="let mGov of governorates()" [label]="mGov.name">
+                                        <option *ngFor="let city of mGov.cities" [value]="city">{{ city }}</option>
+                                    </optgroup>
+                                </select>
+                                <button
+                                    style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                    (click)="addDestinationFromSelect(activeGov, destSelect.value); destSelect.value=''">+
+                                    {{
+                                    lang.t('dash_add') }}</button>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px;">
-                            <select #destSelect class="dest-input" style="flex: 1; padding: 10px;">
-                                <option value="" disabled selected>{{ lang.isArabic() ? 'اختر مدينة لإضافتها لوجهات
-                                    العودة' : 'Select city for destination' }}</option>
-                                <option value="السكن الجامعي HQ">السكن الجامعي HQ</option>
-                                <option value="جامعة العلمين الدولية">جامعة العلمين الدولية</option>
-                                <optgroup *ngFor="let gov of governorates()" [label]="gov.name">
-                                    <option *ngFor="let city of gov.cities" [value]="city">{{ city }}</option>
-                                </optgroup>
-                            </select>
-                            <button
-                                style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
-                                (click)="addDestinationFromSelect(config, destSelect.value); destSelect.value=''">+ {{
-                                lang.t('dash_add') }}</button>
+
+                        <div class="setting-section">
+                            <h4>{{ lang.isArabic() ? 'استمارة أيام المواعيد' : 'Directional Days & Times' }}</h4>
+                            <div class="add-time-form"
+                                style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px;">
+                                <select #daySelect class="dest-input" style="flex: 1; min-width: 200px; padding: 12px;">
+                                    <option value="" disabled selected>{{ lang.t('dash_choose_day') }}</option>
+                                    <option *ngFor="let day of activeGov.directionalDays" [value]="day.id">{{ day.name
+                                        }}
+                                    </option>
+                                </select>
+                                <input type="time" #timeInput class="dest-input" style="width: auto; padding: 12px;">
+                                <button
+                                    style="background: #2563eb; color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                    (click)="addSpecificTime(activeGov, daySelect.value, timeInput.value); daySelect.value=''; timeInput.value=''">{{
+                                    lang.t('dash_add_time') }}</button>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <ng-container *ngFor="let day of activeGov.directionalDays">
+                                    <div *ngIf="day.times && day.times.length > 0"
+                                        style="display: flex; align-items: flex-start; gap: 15px; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
+                                        <span
+                                            style="font-weight: bold; min-width: 110px; color: #f59e0b; margin-top: 5px;">{{
+                                            day.name }}</span>
+                                        <div class="tag-list" style="flex: 1;">
+                                            <span class="tag" *ngFor="let time of day.times; let i = index">
+                                                {{ time }}
+                                                <i class="bi bi-x" (click)="removeTime(day, i)"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
                         </div>
-                    </div>
+
+                    </ng-container>
 
                     <button class="save-btn" (click)="updateSetting(config)">{{ lang.t('dash_save') }}</button>
                 </div>

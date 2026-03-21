@@ -50,67 +50,54 @@ export class BookingForm implements OnInit {
   // Dynamic lists from backend - using signals for reactivity
   governorates = signal<Governorate[]>([]);
   timeSlots = signal<string[]>([]);
-  pickupLocations = signal<string[]>([]);
-  destinations = signal<string[]>([]);
 
-  directionalDays = computed(() => {
+  activeUniversityConfig = signal<any>(null);
+
+  activeGovernorateConfig = computed(() => {
     const govId = this.formData.governorate;
-    if (!govId) return [];
-    const gov = this.governorates().find(g => g._id === govId);
-    return gov && gov.directionalDays ? gov.directionalDays.filter((d: any) => d.active) : [];
+    const govName = this.governorates().find(g => g._id === govId)?.name;
+    const uniConfig = this.activeUniversityConfig();
+    if (!govName || !uniConfig || !uniConfig.governorates) return null;
+    return uniConfig.governorates.find((g: any) => g.governorateName === govName);
   });
 
-  originalPickupLocations: string[] = [];
-  originalDestinations: string[] = [];
+  directionalDays = computed(() => {
+    const govConf = this.activeGovernorateConfig();
+    return govConf && govConf.directionalDays ? govConf.directionalDays.filter((d: any) => d.active) : [];
+  });
 
-  get allUniversityLocs() {
-    return Array.from(new Set([...this.pickupLocations(), ...this.destinations()]));
-  }
+  pickupLocations = computed(() => {
+    const govConf = this.activeGovernorateConfig();
+    return govConf && govConf.pickupLocations ? govConf.pickupLocations.filter((l: any) => l.active).map((l: any) => l.name) : [];
+  });
+
+  destinations = computed(() => {
+    const govConf = this.activeGovernorateConfig();
+    return govConf && govConf.destinations ? govConf.destinations.filter((d: any) => d.active).map((d: any) => d.name) : [];
+  });
 
   get selectedDirection() {
     const dayName = this.formData.weekday;
     if (!dayName) return 'go';
-    const day = this.directionalDays().find(d => d.name === dayName);
+    const day = this.directionalDays().find((d: any) => d.name === dayName);
     return day ? day.direction : 'go';
   }
 
   filteredPickupLocations = computed(() => {
-    const govId = this.formData.governorate;
     const direction = this.selectedDirection;
-    const allLocs = this.allUniversityLocs;
-    const allCities = new Set(this.governorates().flatMap(g => g.cities));
-
     if (direction === 'return') {
-      // Return trip: Pickup from HQ (Locations that are NOT cities)
-      return allLocs.filter(loc => !allCities.has(loc));
+      return this.destinations();
     } else {
-      // Go trip: Pickup from City (Locations that ARE in the selected governorate)
-      if (!govId) {
-        return allLocs.filter(loc => allCities.has(loc));
-      }
-      const gov = this.governorates().find(g => g._id === govId);
-      if (!gov) return allLocs.filter(loc => allCities.has(loc));
-      return allLocs.filter(loc => gov.cities.includes(loc));
+      return this.pickupLocations();
     }
   });
 
   filteredDestinations = computed(() => {
-    const govId = this.formData.governorate;
     const direction = this.selectedDirection;
-    const allLocs = this.allUniversityLocs;
-    const allCities = new Set(this.governorates().flatMap(g => g.cities));
-
     if (direction === 'return') {
-      // Return trip: Destination to City (Locations that ARE in the selected governorate)
-      if (!govId) {
-        return allLocs.filter(loc => allCities.has(loc));
-      }
-      const gov = this.governorates().find(g => g._id === govId);
-      if (!gov) return allLocs.filter(loc => allCities.has(loc));
-      return allLocs.filter(loc => gov.cities.includes(loc));
+      return this.pickupLocations();
     } else {
-      // Go trip: Destination to HQ (Locations that are NOT cities)
-      return allLocs.filter(loc => !allCities.has(loc));
+      return this.destinations();
     }
   });
 
@@ -124,7 +111,7 @@ export class BookingForm implements OnInit {
   groupedDays = computed(() => {
     const days = this.directionalDays();
     const groups: Record<string, any[]> = {};
-    days.forEach(d => {
+    days.forEach((d: any) => {
       const parts = d.name.split(' ');
       const name = parts[0];
       if (!groups[name]) groups[name] = [];
@@ -154,7 +141,7 @@ export class BookingForm implements OnInit {
     this.fetchGovernorates();
     if (this.preselectedUniversity) {
       this.formData.university = this.universityNames[this.preselectedUniversity] || '';
-      this.fetchUniversitySettings(this.preselectedUniversity);
+      this.onUniversityChange();
     }
   }
 
@@ -183,9 +170,8 @@ export class BookingForm implements OnInit {
     if (uniId) {
       this.fetchUniversitySettings(uniId);
     } else {
-      // Clear data if no uni selected
-      this.pickupLocations.set([]);
-      this.destinations.set([]);
+      this.activeUniversityConfig.set(null);
+      this.onGovernorateChange();
     }
     this.validate();
   }
@@ -200,22 +186,7 @@ export class BookingForm implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            const config = res.data;
-            // Sanitize incoming data to handle potential string arrays
-            const sanitizedPickup = (config.pickupLocations || []).map((l: any) =>
-              typeof l === 'string' ? { name: l, active: true } : l
-            );
-            const sanitizedDest = (config.destinations || []).map((d: any) =>
-              typeof d === 'string' ? { name: d, active: true } : d
-            );
-
-            this.originalPickupLocations = sanitizedPickup;
-            this.originalDestinations = sanitizedDest;
-
-            // Reset fields to what's EXACTLY in the dashboard but FILTERED by active status
-            this.pickupLocations.set(this.originalPickupLocations.filter((l: any) => l.active).map((l: any) => l.name));
-            this.destinations.set(this.originalDestinations.filter((d: any) => d.active).map((d: any) => d.name));
-
+            this.activeUniversityConfig.set(res.data);
             this.formData.departureTo = '';
             this.formData.departureFrom = '';
             this.cdr.detectChanges();
@@ -226,15 +197,12 @@ export class BookingForm implements OnInit {
   }
 
   onDayChange() {
-    const selectedDay = this.directionalDays().find(d => d.name === this.formData.weekday);
+    const selectedDay = this.directionalDays().find((d: any) => d.name === this.formData.weekday);
     if (selectedDay) {
       this.timeSlots.set(selectedDay.times || []);
       this.formData.timeSlot = '';
       this.formData.departureFrom = '';
       this.formData.departureTo = '';
-
-      // Automatic swapping and field pre-filling has been removed to give 
-      // the user full control over the selection lists from the dashboard.
       this.cdr.detectChanges();
     }
     this.validate();
