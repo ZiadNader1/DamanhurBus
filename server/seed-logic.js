@@ -118,6 +118,7 @@ module.exports = async () => {
                     exists.governorates = data.governorates;
                     changed = true;
                 }
+                // Ensure pickupLocations and destinations are removed from top level (cleanup from old schema)
                 if (exists.pickupLocations) {
                     exists.pickupLocations = undefined;
                     changed = true;
@@ -125,21 +126,6 @@ module.exports = async () => {
                 if (exists.destinations) {
                     exists.destinations = undefined;
                     changed = true;
-                }
-
-                // Force wipe existing times to empty as per user request
-                if (exists.governorates) {
-                    exists.governorates.forEach(gov => {
-                        if (gov.directionalDays) {
-                            gov.directionalDays.forEach(day => {
-                                if (day.times && day.times.length > 0) {
-                                    day.times = [];
-                                    day.active = false;
-                                    changed = true;
-                                }
-                            });
-                        }
-                    });
                 }
 
                 if (changed) {
