@@ -90,6 +90,7 @@
                             <th>#</th>
                             <th>{{ lang.t('dash_th_name') }}</th>
                             <th>{{ lang.t('dash_th_time') }}</th>
+                            <th>{{ lang.isArabic() ? 'المحافظة' : 'Governorate' }}</th>
                             <th>{{ lang.t('dash_th_pickup') }}</th>
                             <th>{{ lang.t('dash_th_destination') }}</th>
                             <th>{{ lang.t('dash_th_phone') }}</th>
@@ -100,7 +101,7 @@
                         [id]="'bus-group-' + group.busNumber + group.weekday + group.timeSlot">
                         <!-- Bus Category Header -->
                         <tr class="bus-header">
-                            <td colspan="7">
+                            <td colspan="8">
                                 <div class="bus-title-row">
                                     <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
                                         <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
@@ -131,6 +132,9 @@
                                     <option *ngFor="let time of editingAvailableTimes" [value]="time">{{ time }}
                                     </option>
                                 </select>
+                            </td>
+                            <td class="text-center">
+                                <span>{{ booking.governorate }}</span>
                             </td>
                             <td>
                                 <span *ngIf="editingBookingId !== booking._id">{{ booking.departureFrom }}</span>

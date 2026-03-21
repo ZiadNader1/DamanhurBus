@@ -113,7 +113,7 @@ export class DashboardComponent implements OnInit {
             all = all.filter(b => b.weekday === day);
         }
         if (gov !== 'all') {
-            all = all.filter(b => b.governorate === gov);
+            all = all.filter(b => b.governorate?.trim() === gov.trim());
         }
         return all;
     });
