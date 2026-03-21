@@ -24,16 +24,6 @@ const universityConfigSchema = new mongoose.Schema({
             { name: 'كفر الدوار مدخل العمدة', active: true }
         ]
     },
-    directionalDays: {
-        type: [new mongoose.Schema({
-            id: String,
-            name: String,
-            direction: { type: String, enum: ['go', 'return'] },
-            active: { type: Boolean, default: false },
-            times: { type: [String], default: [] }
-        }, { _id: false })],
-        default: []
-    },
     destinations: {
         type: [{
             name: { type: String, trim: true },

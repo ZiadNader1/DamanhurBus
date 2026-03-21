@@ -2,116 +2,69 @@ const UniversityConfig = require('./models/UniversityConfig');
 const User = require('./models/User');
 const Governorate = require('./models/Governorate');
 
+const defaultDirectionalDays = [
+    { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
+    { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
+    { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
+    { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
+];
+
 const governorateData = [
     {
         name: 'البحيرة',
-        cities: ['دمنهور', 'كفر الدوار', 'ايتاي', 'ابو حمص']
+        cities: ['دمنهور', 'كفر الدوار', 'ايتاي', 'ابو حمص'],
+        directionalDays: defaultDirectionalDays
     },
     {
         name: 'كفر الشيخ',
-        cities: ['كفر الشيخ', 'دسوق']
+        cities: ['كفر الشيخ', 'دسوق'],
+        directionalDays: defaultDirectionalDays
     },
     {
         name: 'طنطا',
-        cities: ['طنطا']
+        cities: ['طنطا'],
+        directionalDays: defaultDirectionalDays
     },
     {
         name: 'بورسعيد',
-        cities: ['بورسعيد', 'دمياط']
+        cities: ['بورسعيد', 'دمياط'],
+        directionalDays: defaultDirectionalDays
     }
 ];
 
 const universityData = [
     {
-        // ... university data continues below
-
-        // We will replace up to the start of module.exports
-
         universityId: 'ejust',
         universityName: 'الجامعة المصرية اليابانية',
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        directionalDays: [
-            { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
-            { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
-        ],
         destinations: ['السكن الجامعي HQ']
     },
     {
         universityId: 'alamein',
         universityName: 'جامعة العلمين الدولية',
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        directionalDays: [
-            { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
-            { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
-        ],
         destinations: ['جامعة العلمين الدولية']
     },
     {
         universityId: 'menofia',
         universityName: 'جامعة المنوفية الأهلية',
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        directionalDays: [
-            { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
-            { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
-        ],
         destinations: ['السكن الجامعي HQ']
     },
     {
         universityId: 'damanhour-ahlia',
         universityName: 'جامعة دمنهور الأهلية',
         pickupLocations: ['دمنهور مدخل المحافظة', 'إيتاي شارع فراويلة', 'أبو حمص عند الكوبري', 'كفر الدوار مدخل العمدة'],
-        directionalDays: [
-            { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: true, times: ['07:30 AM', '08:30 AM'] },
-            { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: true, times: ['04:00 PM', '05:00 PM'] },
-            { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
-            { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
-        ],
         destinations: ['السكن الجامعي HQ']
     }
 ];
@@ -127,7 +80,14 @@ module.exports = async () => {
                 await Governorate.create(govData);
                 console.log(`✅ Seeded Governorate ${govData.name}`);
             } else {
-                console.log(`ℹ️ Governorate ${govData.name} exists, skipping.`);
+                // Update existing governorate with directionalDays if they don't have them
+                if (!exists.directionalDays || exists.directionalDays.length === 0) {
+                    exists.directionalDays = govData.directionalDays;
+                    await exists.save();
+                    console.log(`✅ Updated Governorate ${govData.name} with directionalDays`);
+                } else {
+                    console.log(`ℹ️ Governorate ${govData.name} already has directionalDays, skipping.`);
+                }
             }
         }
 
@@ -138,7 +98,12 @@ module.exports = async () => {
                 await UniversityConfig.create(data);
                 console.log(`✅ Seeded ${data.universityId}`);
             } else {
-                console.log(`ℹ️ ${data.universityId} exists, skipping sync to maintain persistence.`);
+                // Remove directionalDays from existing university config if it exists
+                if (exists.directionalDays) {
+                    exists.directionalDays = undefined;
+                    await exists.save();
+                    console.log(`✅ Removed tracking directionalDays from University ${data.universityId}`);
+                }
             }
         }
 

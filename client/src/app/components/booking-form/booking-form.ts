@@ -10,6 +10,7 @@ interface Governorate {
   _id: string;
   name: string;
   cities: string[];
+  directionalDays?: any[];
   active: boolean;
 }
 
@@ -48,37 +49,69 @@ export class BookingForm implements OnInit {
 
   // Dynamic lists from backend - using signals for reactivity
   governorates = signal<Governorate[]>([]);
-  directionalDays = signal<any[]>([]);
   timeSlots = signal<string[]>([]);
   pickupLocations = signal<string[]>([]);
   destinations = signal<string[]>([]);
 
+  directionalDays = computed(() => {
+    const govId = this.formData.governorate;
+    if (!govId) return [];
+    const gov = this.governorates().find(g => g._id === govId);
+    return gov && gov.directionalDays ? gov.directionalDays.filter((d: any) => d.active) : [];
+  });
+
   originalPickupLocations: string[] = [];
   originalDestinations: string[] = [];
 
-  // Filtered dropdowns based on Governorate
+  get allUniversityLocs() {
+    return Array.from(new Set([...this.pickupLocations(), ...this.destinations()]));
+  }
+
+  get selectedDirection() {
+    const dayName = this.formData.weekday;
+    if (!dayName) return 'go';
+    const day = this.directionalDays().find(d => d.name === dayName);
+    return day ? day.direction : 'go';
+  }
+
   filteredPickupLocations = computed(() => {
-    const allLocs = this.pickupLocations();
     const govId = this.formData.governorate;
-    if (!govId) return allLocs;
-
-    const gov = this.governorates().find(g => g._id === govId);
-    if (!gov) return allLocs;
-
+    const direction = this.selectedDirection;
+    const allLocs = this.allUniversityLocs;
     const allCities = new Set(this.governorates().flatMap(g => g.cities));
-    return allLocs.filter(loc => gov.cities.includes(loc) || !allCities.has(loc));
+
+    if (direction === 'return') {
+      // Return trip: Pickup from HQ (Locations that are NOT cities)
+      return allLocs.filter(loc => !allCities.has(loc));
+    } else {
+      // Go trip: Pickup from City (Locations that ARE in the selected governorate)
+      if (!govId) {
+        return allLocs.filter(loc => allCities.has(loc));
+      }
+      const gov = this.governorates().find(g => g._id === govId);
+      if (!gov) return allLocs.filter(loc => allCities.has(loc));
+      return allLocs.filter(loc => gov.cities.includes(loc));
+    }
   });
 
   filteredDestinations = computed(() => {
-    const allLocs = this.destinations();
     const govId = this.formData.governorate;
-    if (!govId) return allLocs;
-
-    const gov = this.governorates().find(g => g._id === govId);
-    if (!gov) return allLocs;
-
+    const direction = this.selectedDirection;
+    const allLocs = this.allUniversityLocs;
     const allCities = new Set(this.governorates().flatMap(g => g.cities));
-    return allLocs.filter(loc => gov.cities.includes(loc) || !allCities.has(loc));
+
+    if (direction === 'return') {
+      // Return trip: Destination to City (Locations that ARE in the selected governorate)
+      if (!govId) {
+        return allLocs.filter(loc => allCities.has(loc));
+      }
+      const gov = this.governorates().find(g => g._id === govId);
+      if (!gov) return allLocs.filter(loc => allCities.has(loc));
+      return allLocs.filter(loc => gov.cities.includes(loc));
+    } else {
+      // Go trip: Destination to HQ (Locations that are NOT cities)
+      return allLocs.filter(loc => !allCities.has(loc));
+    }
   });
 
   universities = computed(() => {
@@ -136,8 +169,11 @@ export class BookingForm implements OnInit {
   }
 
   onGovernorateChange() {
+    this.formData.weekday = '';
+    this.formData.timeSlot = '';
     this.formData.departureFrom = '';
     this.formData.departureTo = '';
+    this.timeSlots.set([]);
     this.validate();
     this.cdr.detectChanges();
   }
@@ -148,7 +184,6 @@ export class BookingForm implements OnInit {
       this.fetchUniversitySettings(uniId);
     } else {
       // Clear data if no uni selected
-      this.directionalDays.set([]);
       this.pickupLocations.set([]);
       this.destinations.set([]);
     }
@@ -176,14 +211,11 @@ export class BookingForm implements OnInit {
 
             this.originalPickupLocations = sanitizedPickup;
             this.originalDestinations = sanitizedDest;
-            this.directionalDays.set((config.directionalDays || []).filter((d: any) => d.active));
 
             // Reset fields to what's EXACTLY in the dashboard but FILTERED by active status
             this.pickupLocations.set(this.originalPickupLocations.filter((l: any) => l.active).map((l: any) => l.name));
             this.destinations.set(this.originalDestinations.filter((d: any) => d.active).map((d: any) => d.name));
 
-            this.formData.weekday = '';
-            this.formData.timeSlot = '';
             this.formData.departureTo = '';
             this.formData.departureFrom = '';
             this.cdr.detectChanges();
@@ -198,6 +230,8 @@ export class BookingForm implements OnInit {
     if (selectedDay) {
       this.timeSlots.set(selectedDay.times || []);
       this.formData.timeSlot = '';
+      this.formData.departureFrom = '';
+      this.formData.departureTo = '';
 
       // Automatic swapping and field pre-filling has been removed to give 
       // the user full control over the selection lists from the dashboard.

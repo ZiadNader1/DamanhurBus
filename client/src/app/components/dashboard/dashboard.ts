@@ -23,6 +23,7 @@ interface Governorate {
     _id: string;
     name: string;
     cities: string[];
+    directionalDays: DirectionalDay[];
     active: boolean;
 }
 
@@ -39,7 +40,6 @@ interface UniversityConfig {
     universityId: string;
     universityName: string;
     pickupLocations: { name: string; active: boolean }[];
-    directionalDays: DirectionalDay[];
     destinations: { name: string; active: boolean }[];
 }
 
@@ -73,19 +73,14 @@ export class DashboardComponent implements OnInit {
     editingBookingData: any = {};
     editingAvailableTimes: string[] = [];
 
-    // ✅ Get days available for the selected university
+    // ✅ Get days available for the filter
     availableDaysForFilter = computed(() => {
-        const uni = this.selectedUni();
-        if (uni === 'all') {
-            // Get all possible unique active day names across all universities
-            const allDays = new Set<string>();
-            this.universityConfigs().forEach(c => {
-                c.directionalDays?.filter(d => d.active).forEach(d => allDays.add(d.name));
-            });
-            return Array.from(allDays);
-        }
-        const config = this.universityConfigs().find(c => c.universityName === uni);
-        return config && config.directionalDays ? config.directionalDays.filter(d => d.active).map(d => d.name) : [];
+        // Collect from governorates since days are now global per governorate
+        const allDays = new Set<string>();
+        this.governorates().forEach(g => {
+            g.directionalDays?.filter((d: DirectionalDay) => d.active).forEach((d: DirectionalDay) => allDays.add(d.name));
+        });
+        return Array.from(allDays);
     });
 
     filteredBookings = computed(() => {
@@ -235,7 +230,7 @@ export class DashboardComponent implements OnInit {
         loc.active = !loc.active;
     }
 
-    addSpecificTime(config: UniversityConfig, dayId: string, time24: string) {
+    addSpecificTime(gov: Governorate, dayId: string, time24: string) {
         if (!dayId) {
             alert(this.lang.t('err_day'));
             return;
@@ -254,8 +249,10 @@ export class DashboardComponent implements OnInit {
         const paddedHours = hours.toString().padStart(2, '0');
         const formattedTime = `${paddedHours}:${minutesStr} ${ampm}`;
 
-        const day = config.directionalDays.find(d => d.id === dayId);
+        if (!gov.directionalDays) gov.directionalDays = [];
+        const day = gov.directionalDays.find(d => d.id === dayId);
         if (day) {
+            if (!day.times) day.times = [];
             if (!day.times.includes(formattedTime)) {
                 day.times.push(formattedTime);
             }
@@ -376,13 +373,7 @@ export class DashboardComponent implements OnInit {
         this.editingBookingId = booking._id || null;
         this.editingBookingData = { ...booking };
         this.editingBookingData.bookingDateLocal = this.toDatetimeLocal(booking.bookingDate);
-        const config = this.universityConfigs().find(c => c.universityName === booking.university);
-        if (config && config.directionalDays) {
-            const currentDayConfig = config.directionalDays.find(d => d.name === booking.weekday);
-            this.editingAvailableTimes = currentDayConfig && currentDayConfig.times ? [...currentDayConfig.times] : [];
-        } else {
-            this.editingAvailableTimes = [];
-        }
+        this.editingAvailableTimes = [];
     }
 
     toDatetimeLocal(dateStr: string): string {

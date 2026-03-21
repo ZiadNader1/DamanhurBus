@@ -7,37 +7,6 @@
 
         <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
-            <!-- Weekday (Select) -->
-            <div class="form-group" [class.has-error]="errors().weekday">
-                <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
-                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()">
-                    <option value="" disabled selected>{{ lang.t('form_day_ph') }}</option>
-                    <option *ngFor="let day of directionalDays()" [value]="day.name">{{day.name}}</option>
-                </select>
-                <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
-            </div>
-
-            <!-- Time Slot (Select) -->
-            <div class="form-group" [class.has-error]="errors().timeSlot">
-                <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
-                <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()">
-                    <option value="" disabled selected>{{ lang.t('form_time_ph') }}</option>
-                    <option *ngFor="let time of timeSlots()" [value]="time">{{time}}</option>
-                </select>
-                <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
-            </div>
-
-            <!-- University -->
-            <div class="form-group" [class.has-error]="errors().university">
-                <label for="university"><i class="bi bi-building"></i> {{ lang.t('form_university') }}</label>
-                <select id="university" name="university" [(ngModel)]="formData.university"
-                    (change)="onUniversityChange()" [disabled]="preselectedUniversity ? true : false">
-                    <option value="" disabled selected>{{ lang.t('form_university_ph') }}</option>
-                    <option *ngFor="let uni of universities()" [value]="uni">{{uni}}</option>
-                </select>
-                <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
-            </div>
-
             <!-- Governorate -->
             <div class="form-group" [class.has-error]="errors().governorate">
                 <label for="governorate"><i class="bi bi-map"></i> {{ lang.isArabic() ? 'المحافظة' : 'Governorate'
@@ -49,6 +18,39 @@
                     <option *ngFor="let gov of governorates()" [value]="gov._id">{{gov.name}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().governorate">{{errors().governorate}}</span>
+            </div>
+
+            <!-- Weekday (Select) -->
+            <div class="form-group" [class.has-error]="errors().weekday">
+                <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
+                <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()"
+                    [disabled]="!formData.governorate">
+                    <option value="" disabled selected>{{ lang.t('form_day_ph') }}</option>
+                    <option *ngFor="let day of directionalDays()" [value]="day.name">{{day.name}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
+            </div>
+
+            <!-- Time Slot (Select) -->
+            <div class="form-group" [class.has-error]="errors().timeSlot">
+                <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
+                <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()"
+                    [disabled]="!formData.weekday">
+                    <option value="" disabled selected>{{ lang.t('form_time_ph') }}</option>
+                    <option *ngFor="let time of timeSlots()" [value]="time">{{time}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
+            </div>
+
+            <!-- University -->
+            <div class="form-group" [class.has-error]="errors().university">
+                <label for="university"><i class="bi bi-building"></i> {{ lang.t('form_university') }}</label>
+                <select id="university" name="university" [(ngModel)]="formData.university"
+                    (change)="onUniversityChange()" [disabled]="preselectedUniversity || !formData.governorate">
+                    <option value="" disabled selected>{{ lang.t('form_university_ph') }}</option>
+                    <option *ngFor="let uni of universities()" [value]="uni">{{uni}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
             </div>
 
             <!-- Departure From (Select) -->
