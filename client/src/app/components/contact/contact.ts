@@ -11,13 +11,17 @@ import { TranslationService } from '../../services/translation.service';
     styleUrl: './contact.css'
 })
 export class ContactComponent {
-    whatsappGroupLink = 'https://chat.whatsapp.com/KWne4THix6D1UjAB3mSba6';
+    whatsappGroups = [
+        { name: 'البحيرة', link: 'https://chat.whatsapp.com/KWne4THix6D1UjAB3mSba6' },
+        { name: 'كفر الشيخ', link: 'https://chat.whatsapp.com/F0nZ8Pz89h47w5mAfWu4DE' },
+        { name: 'بورسعيد ودمياط', link: 'https://chat.whatsapp.com/Hh2DIVWqX53LGaqNgpizY9?mode=gi_t' }
+    ];
     phoneNumber = '01067465956';
 
     constructor(public lang: TranslationService) { }
 
-    openWhatsApp() {
-        window.open(this.whatsappGroupLink, '_blank');
+    openWhatsApp(link: string) {
+        window.open(link, '_blank');
     }
 
     callPhone() {

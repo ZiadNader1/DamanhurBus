@@ -100,6 +100,13 @@
     line-height: 1.5;
 }
 
+.whatsapp-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
 .contact-btn {
     width: 100%;
     padding: 12px;

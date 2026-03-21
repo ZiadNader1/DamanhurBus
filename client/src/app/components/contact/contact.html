@@ -13,9 +13,12 @@
                 </div>
                 <h3>{{ lang.t('contact_whatsapp') }}</h3>
                 <p>{{ lang.t('contact_whatsapp_sub') }}</p>
-                <a [href]="whatsappGroupLink" target="_blank" class="contact-btn whatsapp">
-                    {{ lang.t('contact_join') }}
-                </a>
+                <div class="whatsapp-buttons">
+                    <a *ngFor="let group of whatsappGroups" [href]="group.link" target="_blank"
+                        class="contact-btn whatsapp">
+                        <span>{{ lang.t('contact_join') }} ({{ group.name }})</span>
+                    </a>
+                </div>
             </div>
         </div>
 
