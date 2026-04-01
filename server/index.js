@@ -7,7 +7,12 @@ const connectDB = require('./config/db');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['https://damanhurbuses.netlify.app', 'http://localhost:4200'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Routes
