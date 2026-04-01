@@ -436,40 +436,100 @@ td {
 /* Print Specific Rules */
 @media print {
     @page {
-        size: A4 portrait;
-        margin: 10mm;
+        size: A4 landscape; /* Much better for full tables */
+        margin: 5mm;
     }
 
-    body {
-        background: #fff !important;
-        color: #000 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body, html, .dashboard-wrapper, .dashboard-main, .table-container {
+        background: #ffffff !important;
+        color: #000000 !important;
     }
 
     .dashboard-sidebar,
     .main-header,
     .nav-tabs,
     .no-print,
+    .action-btns,
     .actions,
     .mobile-menu-toggle {
         display: none !important;
     }
 
-    .dashboard-container {
-        padding: 0 !important;
-        margin: 0 !important;
-        background: #fff !important;
-    }
-
     .dashboard-main {
         padding: 0 !important;
+        margin: 0 !important;
         max-width: 100% !important;
+        width: 100% !important;
     }
 
-    .content-area, .content-body {
-        margin: 0 !important;
-        padding: 0 !important;
+    .table-container {
+        border: none !important;
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 2px solid #000 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    tbody {
+        page-break-inside: avoid !important;
+        background: #ffffff !important;
+    }
+
+    tbody:not(:first-of-type) {
+        page-break-before: always !important;
+    }
+
+    tr {
+        background: #ffffff !important;
+    }
+
+    th {
+        background-color: #f1f5f9 !important;
+        color: #000000 !important;
+        border: 1px solid #334155 !important;
+        font-size: 11pt !important;
+        font-weight: 800 !important;
+        padding: 8px !important;
+    }
+
+    td {
+        background-color: #ffffff !important;
+        border: 1px solid #334155 !important;
+        color: #000000 !important;
+        font-size: 10pt !important;
+        padding: 6px !important;
+    }
+
+    .bus-header {
+        background-color: #ffffff !important;
+    }
+
+    .bus-header td {
+        background-color: #1d4ed8 !important; /* Deep blue header */
+        color: #ffffff !important;
+        font-size: 13pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        padding: 10px !important;
+        border: 2px solid #1e293b !important;
+    }
+
+    .bus-title {
+        color: #ffffff !important;
+        text-align: center !important;
+        display: block !important;
         width: 100% !important;
     }
 
@@ -478,57 +538,6 @@ td {
         text-align: center;
         margin-bottom: 20px;
         color: #000;
-    }
-
-    .print-header h1 {
-        font-size: 24pt;
-        margin-bottom: 5px;
-    }
-
-    .table-container {
-        border: none !important;
-        background: transparent !important;
-        overflow: visible !important;
-    }
-
-    table {
-        width: 100% !important;
-        border: 1px solid #ddd !important;
-        border-collapse: collapse !important;
-    }
-
-    tbody {
-        page-break-inside: avoid !important;
-    }
-
-    tbody:not(:first-of-type) {
-        page-break-before: always !important;
-    }
-
-    th {
-        background: #f2f2f2 !important;
-        color: #000 !important;
-        border: 1px solid #ddd !important;
-        font-size: 11pt !important;
-        padding: 8px !important;
-    }
-
-    td {
-        border: 1px solid #ddd !important;
-        color: #000 !important;
-        font-size: 10.5pt !important;
-        padding: 6px !important;
-    }
-
-    .bus-header td {
-        background: #2980b9 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-
-    .bus-title {
-        color: #fff !important;
     }
 }
 
