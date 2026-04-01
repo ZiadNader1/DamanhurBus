@@ -4,13 +4,6 @@ const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
 
-// Connect Database
-connectDB().then(async () => {
-    console.log('Running auto-seed...');
-    const seed = require('./seed-logic');
-    await seed();
-});
-
 const app = express();
 
 // Middleware
@@ -30,6 +23,16 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Connect Database
+connectDB().then(async () => {
+    console.log('Running auto-seed...');
+    const seed = require('./seed-logic');
+    await seed();
+
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error('Initialization error:', err);
+    process.exit(1);
 });

@@ -18,10 +18,17 @@ const protect = async (req, res, next) => {
             // Get user from the token
             req.user = await User.findById(decoded.id).select('-password');
 
+            if (!req.user) {
+                return res.status(401).json({ message: 'Not authorized, user not found' });
+            }
+
             next();
         } catch (error) {
-            console.error(error);
-            res.status(401).json({ message: 'Not authorized' });
+            console.error('Auth Error:', error);
+            if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: 'Not authorized, token failed' });
+            }
+            return res.status(500).json({ message: 'Server error during authentication', details: error.message });
         }
     }
 

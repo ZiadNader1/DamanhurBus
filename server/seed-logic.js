@@ -88,6 +88,7 @@ module.exports = async () => {
         console.log('Seeding database...');
 
         // 0. Seed Governorates
+        console.log('--- Step 0: Checking Governorates ---');
         for (const govData of governorateData) {
             const exists = await Governorate.findOne({ name: govData.name });
             if (!exists) {
@@ -106,6 +107,7 @@ module.exports = async () => {
         }
 
         // 1. Seed University Configs
+        console.log('--- Step 1: Checking University Configs ---');
         for (const data of universityData) {
             const exists = await UniversityConfig.findOne({ universityId: data.universityId });
             if (!exists) {
@@ -138,6 +140,7 @@ module.exports = async () => {
         }
 
         // 2. Seed Admin User
+        console.log('--- Step 2: Checking Admin User ---');
         const adminEmail = 'admin@damanhourbus.com';
         const adminExists = await User.findOne({ email: adminEmail });
 
@@ -153,6 +156,7 @@ module.exports = async () => {
 
         console.log('🚀 Database sync success!');
     } catch (error) {
-        console.error('❌ Sync error:', error);
+        console.error('❌ Sync error during database seeding:', error);
+        throw error; // Re-throw to be caught by index.js
     }
 };
