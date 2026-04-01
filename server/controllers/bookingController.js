@@ -16,6 +16,10 @@ exports.createBooking = async (req, res) => {
             governorate
         } = req.body;
 
+        // Assign order as max+1 for same weekday/timeSlot so new bookings go to end
+        const lastBooking = await Booking.findOne({ weekday, timeSlot }).sort({ order: -1 });
+        const nextOrder = lastBooking ? (lastBooking.order || 0) + 1 : 0;
+
         const booking = await Booking.create({
             fullName,
             phoneNumber,
@@ -24,7 +28,8 @@ exports.createBooking = async (req, res) => {
             timeSlot,
             departureFrom,
             departureTo,
-            governorate
+            governorate,
+            order: nextOrder
         });
 
         res.status(201).json({
@@ -120,6 +125,18 @@ exports.deleteBooking = async (req, res) => {
     try {
         const booking = await Booking.findByIdAndDelete(req.params.id);
         if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
+
+        // Re-index remaining bookings in same weekday/timeSlot to close gaps
+        const remaining = await Booking.find({
+            weekday: booking.weekday,
+            timeSlot: booking.timeSlot
+        }).sort({ order: 1 });
+
+        const updates = remaining.map((b, i) =>
+            Booking.findByIdAndUpdate(b._id, { order: i })
+        );
+        await Promise.all(updates);
+
         res.status(200).json({ success: true, data: {} });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

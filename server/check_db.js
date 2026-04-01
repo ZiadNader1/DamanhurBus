@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
-const UniversityConfig = require('./models/UniversityConfig');
+const Booking = require('./models/Booking');
 require('dotenv').config();
 
 async function checkDB() {
     try {
         await mongoose.connect(process.env.MONGO_URI);
-        const configs = await UniversityConfig.find({});
-        console.log(JSON.stringify(configs, null, 2));
+        const satFri = await Booking.find({
+            weekday: { $in: ['السبت', 'الجمعة', 'Saturday', 'Friday'] },
+            departureTo: { $regex: 'البحيرة|Beheira', $options: 'i' }
+        });
+        console.log("Remaining Sat/Fri Beheira bookings:", satFri.length);
+        console.log(satFri);
         await mongoose.disconnect();
     } catch (err) {
         console.error(err);

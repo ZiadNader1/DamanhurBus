@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable';
 import { jsPDF } from 'jspdf';
 import { API_URL } from '../../api-config';
 import { TranslationService } from '../../services/translation.service';
@@ -530,52 +530,58 @@ export class DashboardComponent implements OnInit {
     }
 
     exportToPDF() {
-        const element = document.getElementById('printable-area');
-        if (!element) return;
+        const groups = this.groupedBookings();
+        if (groups.length === 0) return;
 
-        // Save original styles
-        const originalWidth = element.style.width;
-        const originalPosition = element.style.position;
-        const originalLeft = element.style.left;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        let isFirstGroup = true;
 
-        // Force a wider width for better capture on mobile
-        element.style.width = '1200px';
-        element.style.position = 'absolute';
-        element.style.left = '-9999px';
+        groups.forEach(group => {
+            if (!isFirstGroup) {
+                pdf.addPage();
+            }
+            isFirstGroup = false;
 
-        html2canvas(element, {
-            backgroundColor: '#0a0f1d',
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            onclone: (clonedDoc) => {
-                const noPrintElements = clonedDoc.querySelectorAll('.no-print');
-                noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
+            // Bus header
+            const title = `Bus ${group.busNumber} - ${group.weekday} - ${group.timeSlot}`;
+            pdf.setFontSize(14);
+            pdf.setTextColor(40, 40, 40);
+            pdf.text(title, pageWidth / 2, 15, { align: 'center' });
 
-                const textElements = clonedDoc.querySelectorAll('td, th, span, .bus-title');
-                textElements.forEach(el => {
-                    (el as HTMLElement).style.color = '#ffffff';
-                });
-            },
-            allowTaint: true,
-            windowWidth: 1200
-        }).then(canvas => {
-            // Restore original styles
-            element.style.width = originalWidth;
-            element.style.position = originalPosition;
-            element.style.left = originalLeft;
+            const headers = [['#', 'Name', 'Time', 'Gov', 'From', 'To', 'Phone']];
+            const rows = group.bookings.map((b, i) => [
+                ((group.busNumber - 1) * 15 + i + 1).toString(),
+                b.fullName,
+                b.timeSlot,
+                b.governorate || '',
+                b.departureFrom || '',
+                b.departureTo || '',
+                b.phoneNumber || ''
+            ]);
 
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-            const date = new Date();
-            const filename = `كشف-حجوزات-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.pdf`;
-            pdf.save(filename);
+            autoTable(pdf, {
+                head: headers,
+                body: rows,
+                startY: 22,
+                styles: { fontSize: 9, cellPadding: 3 },
+                headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [245, 247, 250] },
+                columnStyles: {
+                    0: { cellWidth: 10, halign: 'center' },
+                    1: { cellWidth: 35 },
+                    2: { cellWidth: 22, halign: 'center' },
+                    3: { cellWidth: 25 },
+                    4: { cellWidth: 30 },
+                    5: { cellWidth: 30 },
+                    6: { cellWidth: 28, halign: 'center' }
+                },
+                margin: { left: 5, right: 5 }
+            });
         });
+
+        const date = new Date();
+        const filename = `bookings-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.pdf`;
+        pdf.save(filename);
     }
 }
