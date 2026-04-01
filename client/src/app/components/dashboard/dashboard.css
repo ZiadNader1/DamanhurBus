@@ -435,16 +435,24 @@ td {
 
 /* Print Specific Rules */
 @media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
     body {
         background: #fff !important;
         color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
-    .sidebar,
+    .dashboard-sidebar,
     .main-header,
     .nav-tabs,
     .no-print,
-    .actions {
+    .actions,
+    .mobile-menu-toggle {
         display: none !important;
     }
 
@@ -454,7 +462,12 @@ td {
         background: #fff !important;
     }
 
-    .content-area {
+    .dashboard-main {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .content-area, .content-body {
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
@@ -463,7 +476,7 @@ td {
     .print-header {
         display: block !important;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         color: #000;
     }
 
@@ -475,34 +488,50 @@ td {
     .table-container {
         border: none !important;
         background: transparent !important;
+        overflow: visible !important;
     }
 
     table {
         width: 100% !important;
         border: 1px solid #ddd !important;
+        border-collapse: collapse !important;
+    }
+
+    tbody {
+        page-break-inside: avoid !important;
+    }
+
+    tbody:not(:first-of-type) {
+        page-break-before: always !important;
     }
 
     th {
         background: #f2f2f2 !important;
         color: #000 !important;
         border: 1px solid #ddd !important;
+        font-size: 11pt !important;
+        padding: 8px !important;
     }
 
     td {
         border: 1px solid #ddd !important;
         color: #000 !important;
+        font-size: 10.5pt !important;
+        padding: 6px !important;
     }
 
-    .bus-header {
+    .bus-header td {
         background: #2980b9 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .bus-title {
         color: #fff !important;
     }
 }
+
 
 /* Bus Badges */
 .bus-badge {

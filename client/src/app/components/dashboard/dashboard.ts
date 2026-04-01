@@ -530,58 +530,6 @@ export class DashboardComponent implements OnInit {
     }
 
     exportToPDF() {
-        const groups = this.groupedBookings();
-        if (groups.length === 0) return;
-
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        let isFirstGroup = true;
-
-        groups.forEach(group => {
-            if (!isFirstGroup) {
-                pdf.addPage();
-            }
-            isFirstGroup = false;
-
-            // Bus header
-            const title = `Bus ${group.busNumber} - ${group.weekday} - ${group.timeSlot}`;
-            pdf.setFontSize(14);
-            pdf.setTextColor(40, 40, 40);
-            pdf.text(title, pageWidth / 2, 15, { align: 'center' });
-
-            const headers = [['#', 'Name', 'Time', 'Gov', 'From', 'To', 'Phone']];
-            const rows = group.bookings.map((b, i) => [
-                ((group.busNumber - 1) * 15 + i + 1).toString(),
-                b.fullName,
-                b.timeSlot,
-                b.governorate || '',
-                b.departureFrom || '',
-                b.departureTo || '',
-                b.phoneNumber || ''
-            ]);
-
-            autoTable(pdf, {
-                head: headers,
-                body: rows,
-                startY: 22,
-                styles: { fontSize: 9, cellPadding: 3 },
-                headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-                alternateRowStyles: { fillColor: [245, 247, 250] },
-                columnStyles: {
-                    0: { cellWidth: 10, halign: 'center' },
-                    1: { cellWidth: 35 },
-                    2: { cellWidth: 22, halign: 'center' },
-                    3: { cellWidth: 25 },
-                    4: { cellWidth: 30 },
-                    5: { cellWidth: 30 },
-                    6: { cellWidth: 28, halign: 'center' }
-                },
-                margin: { left: 5, right: 5 }
-            });
-        });
-
-        const date = new Date();
-        const filename = `bookings-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.pdf`;
-        pdf.save(filename);
+        window.print();
     }
 }
