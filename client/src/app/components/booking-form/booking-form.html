@@ -75,20 +75,39 @@
                 <span class="error-msg" *ngIf="errors().departureTo">{{errors().departureTo}}</span>
             </div>
 
-            <!-- Travel Purpose -->
+            <!-- Travel Purpose (MCQ) -->
             <div class="form-group" [class.has-error]="errors().travelPurpose">
-                <label for="travelPurpose"><i class="bi bi-question-circle"></i> {{ lang.isArabic() ? 'الغرض من السفر؟' : 'Travel Purpose' }}</label>
-                <select id="travelPurpose" name="travelPurpose" [(ngModel)]="formData.travelPurpose" (change)="validate()">
-                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر الغرض من السفر' : 'Select travel purpose' }}</option>
-                    <option value="سفر عادي">{{ lang.isArabic() ? 'سفر عادي' : 'Regular Travel' }}</option>
-                    <option value="ارسال حقائب">{{ lang.isArabic() ? 'ارسال حقائب' : 'Baggage Transfer' }}</option>
-                </select>
+                <label><i class="bi bi-question-circle"></i> {{ lang.isArabic() ? 'الغرض من السفر؟' : 'Travel Purpose' }}</label>
+                <div class="purpose-mcq">
+                    <div class="purpose-option" 
+                         [class.selected]="formData.travelPurpose === 'سفر عادي'"
+                         (click)="selectPurpose('سفر عادي')">
+                        <div class="purpose-radio">
+                            <div class="radio-dot" *ngIf="formData.travelPurpose === 'سفر عادي'"></div>
+                        </div>
+                        <div class="purpose-content">
+                            <i class="bi bi-bus-front"></i>
+                            <span>{{ lang.isArabic() ? 'سفر عادي' : 'Regular Travel' }}</span>
+                        </div>
+                    </div>
+                    <div class="purpose-option" 
+                         [class.selected]="formData.travelPurpose === 'ارسال حقائب'"
+                         (click)="selectPurpose('ارسال حقائب')">
+                        <div class="purpose-radio">
+                            <div class="radio-dot" *ngIf="formData.travelPurpose === 'ارسال حقائب'"></div>
+                        </div>
+                        <div class="purpose-content">
+                            <i class="bi bi-luggage"></i>
+                            <span>{{ lang.isArabic() ? 'ارسال حقائب' : 'Baggage Transfer' }}</span>
+                        </div>
+                    </div>
+                </div>
                 <span class="error-msg" *ngIf="errors().travelPurpose">{{errors().travelPurpose}}</span>
             </div>
 
             <!-- Baggage Description (Conditional - Only show when "ارسال حقائب" is selected) -->
-            <div *ngIf="formData.travelPurpose === 'ارسال حقائب'" class="form-group">
-                <label for="baggageDescription"><i class="bi bi-baggage"></i> {{ lang.isArabic() ? 'وصف الحقائب المرسلة (أختياري)' : 'Baggage Description (Optional)' }}</label>
+            <div *ngIf="formData.travelPurpose === 'ارسال حقائب'" class="form-group baggage-box-animate">
+                <label for="baggageDescription"><i class="bi bi-luggage"></i> {{ lang.isArabic() ? 'وصف الحقائب المرسلة (أختياري)' : 'Baggage Description (Optional)' }}</label>
                 <textarea id="baggageDescription" name="baggageDescription" [(ngModel)]="formData.baggageDescription"
                     [placeholder]="lang.isArabic() ? 'أدخل تفاصيل الحقائب...' : 'Enter baggage details...'" (input)="validate()"></textarea>
             </div>

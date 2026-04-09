@@ -248,3 +248,138 @@ select:focus {
     color: #64748b;
     font-style: italic;
 }
+
+/* Travel Purpose MCQ Styles */
+.purpose-mcq {
+    display: flex;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.purpose-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.purpose-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px);
+}
+
+.purpose-option.selected {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+    border-color: #f59e0b;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+.purpose-radio {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.purpose-option.selected .purpose-radio {
+    border-color: #f59e0b;
+}
+
+.radio-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #f59e0b;
+    animation: radioPopIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes radioPopIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.purpose-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+}
+
+.purpose-option.selected .purpose-content {
+    color: #f59e0b;
+}
+
+.purpose-content i {
+    font-size: 1.2rem;
+}
+
+/* Textarea Styles */
+textarea {
+    padding: 14px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: var(--input-bg);
+    outline: none;
+    color: var(--text-color);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+textarea::placeholder {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+textarea:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    background-color: var(--input-bg);
+}
+
+/* Baggage Box Animation */
+.baggage-box-animate {
+    animation: slideDown 0.35s ease-out;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .purpose-mcq {
+        flex-direction: column;
+    }
+}

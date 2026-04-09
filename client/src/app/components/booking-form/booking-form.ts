@@ -243,6 +243,16 @@ export class BookingForm implements OnInit {
     this.cdr.detectChanges();
   }
 
+  selectPurpose(purpose: string) {
+    this.formData.travelPurpose = purpose;
+    // Clear baggage description if switching away from baggage
+    if (purpose !== 'ارسال حقائب') {
+      this.formData.baggageDescription = '';
+    }
+    this.validate();
+    this.cdr.detectChanges();
+  }
+
   validate() {
     const newErrors: any = {};
     if (!this.formData.governorate) newErrors.governorate = this.lang.isArabic() ? 'يرجى اختيار المحافظة' : 'Please select governorate';
