@@ -262,8 +262,8 @@ select:focus {
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
     border-radius: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -271,13 +271,13 @@ select:focus {
 }
 
 .purpose-option:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(245, 158, 11, 0.4);
+    border-color: rgba(245, 158, 11, 0.5);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .purpose-option.selected {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.08));
     border-color: #f59e0b;
     box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
 }
@@ -287,7 +287,7 @@ select:focus {
     height: 22px;
     min-width: 22px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -323,15 +323,20 @@ select:focus {
     gap: 8px;
     font-weight: 600;
     font-size: 0.95rem;
-    color: #e2e8f0;
+    color: var(--text-color);
 }
 
 .purpose-option.selected .purpose-content {
-    color: #f59e0b;
+    color: #d97706;
 }
 
 .purpose-content i {
     font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.purpose-option.selected .purpose-content i {
+    color: #f59e0b;
 }
 
 /* Textarea Styles */
