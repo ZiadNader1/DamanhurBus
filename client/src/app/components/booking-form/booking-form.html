@@ -75,6 +75,24 @@
                 <span class="error-msg" *ngIf="errors().departureTo">{{errors().departureTo}}</span>
             </div>
 
+            <!-- Travel Purpose -->
+            <div class="form-group" [class.has-error]="errors().travelPurpose">
+                <label for="travelPurpose"><i class="bi bi-question-circle"></i> {{ lang.isArabic() ? 'الغرض من السفر؟' : 'Travel Purpose' }}</label>
+                <select id="travelPurpose" name="travelPurpose" [(ngModel)]="formData.travelPurpose" (change)="validate()">
+                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر الغرض من السفر' : 'Select travel purpose' }}</option>
+                    <option value="سفر عادي">{{ lang.isArabic() ? 'سفر عادي' : 'Regular Travel' }}</option>
+                    <option value="ارسال حقائب">{{ lang.isArabic() ? 'ارسال حقائب' : 'Baggage Transfer' }}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().travelPurpose">{{errors().travelPurpose}}</span>
+            </div>
+
+            <!-- Baggage Description (Conditional - Only show when "ارسال حقائب" is selected) -->
+            <div *ngIf="formData.travelPurpose === 'ارسال حقائب'" class="form-group">
+                <label for="baggageDescription"><i class="bi bi-baggage"></i> {{ lang.isArabic() ? 'وصف الحقائب المرسلة (أختياري)' : 'Baggage Description (Optional)' }}</label>
+                <textarea id="baggageDescription" name="baggageDescription" [(ngModel)]="formData.baggageDescription"
+                    [placeholder]="lang.isArabic() ? 'أدخل تفاصيل الحقائب...' : 'Enter baggage details...'" (input)="validate()"></textarea>
+            </div>
+
             <!-- Full Name -->
             <div class="form-group" [class.has-error]="errors().fullName">
                 <label for="fullName"><i class="bi bi-person-badge"></i> {{ lang.t('form_name') }}</label>
