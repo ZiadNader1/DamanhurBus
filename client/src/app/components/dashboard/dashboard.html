@@ -65,6 +65,16 @@
                         </select>
                     </div>
 
+                    <!-- ✅ Travel Purpose Filter -->
+                    <div class="filter-wrapper">
+                        <i class="bi bi-question-circle filter-icon"></i>
+                        <select class="uni-select" [ngModel]="selectedTravelPurpose()" (ngModelChange)="onTravelPurposeChange($event)">
+                            <option value="all">{{ lang.isArabic() ? 'كل الأغراض' : 'All Purposes' }}</option>
+                            <option value="سفر عادي">{{ lang.isArabic() ? 'سفر عادي' : 'Regular Travel' }}</option>
+                            <option value="ارسال حقائب">{{ lang.isArabic() ? 'ارسال حقائب' : 'Baggage Transfer' }}</option>
+                        </select>
+                    </div>
+
                     <button class="toolbar-btn refresh-btn" (click)="fetchData()">
                         <i class="bi bi-arrow-clockwise"></i>
                         <span>{{ lang.t('dash_refresh') }}</span>
@@ -94,6 +104,7 @@
                             <th>{{ lang.t('dash_th_pickup') }}</th>
                             <th>{{ lang.t('dash_th_destination') }}</th>
                             <th>{{ lang.t('dash_th_phone') }}</th>
+                            <th>{{ lang.isArabic() ? 'الغرض' : 'Purpose' }}</th>
                             <th class="no-print">{{ lang.t('dash_th_actions') }}</th>
                         </tr>
                     </thead>
@@ -101,7 +112,7 @@
                         [id]="'bus-group-' + group.busNumber + group.weekday + group.timeSlot">
                         <!-- Bus Category Header -->
                         <tr class="bus-header">
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="bus-title-row">
                                     <div class="bus-title" [dir]="lang.isArabic() ? 'rtl' : 'ltr'">
                                         <span>{{ lang.t('dash_bus') }} {{ group.busNumber }}</span>
@@ -162,6 +173,29 @@
                                         [(ngModel)]="editingBookingData.bookingDateLocal" />
                                 </div>
                             </td>
+
+                            <!-- Travel Purpose & Baggage Description -->
+                            <td class="text-center">
+                                <ng-container *ngIf="editingBookingId !== booking._id">
+                                    <div>
+                                        <span style="font-weight: bold;">{{ booking.travelPurpose }}</span>
+                                    </div>
+                                    <div *ngIf="booking.travelPurpose === 'ارسال حقائب' && booking.baggageDescription" style="font-size: 12px; color: #666; margin-top: 4px;"
+                                        [title]="booking.baggageDescription">
+                                        📦 {{ booking.baggageDescription.substring(0, 20) }}{{ booking.baggageDescription.length > 20 ? '...' : '' }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="editingBookingId === booking._id">
+                                    <select [(ngModel)]="editingBookingData.travelPurpose" class="edit-select w-100">
+                                        <option value="سفر عادي">{{ lang.isArabic() ? 'سفر عادي' : 'Regular Travel' }}</option>
+                                        <option value="ارسال حقائب">{{ lang.isArabic() ? 'ارسال حقائب' : 'Baggage Transfer' }}</option>
+                                    </select>
+                                    <textarea *ngIf="editingBookingData.travelPurpose === 'ارسال حقائب'" [(ngModel)]="editingBookingData.baggageDescription" 
+                                        class="edit-select w-100" style="margin-top: 4px; font-size: 12px; resize: vertical; height: 50px;"
+                                        placeholder="وصف الحقائب"></textarea>
+                                </ng-container>
+                            </td>
+
                             <td class="no-print">
                                 <div class="action-btns">
                                     <ng-container *ngIf="editingBookingId !== booking._id">

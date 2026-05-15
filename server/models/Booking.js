@@ -43,6 +43,15 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide governorate']
     },
+    travelPurpose: {
+        type: String,
+        enum: ['سفر عادي', 'ارسال حقائب'],
+        required: [true, 'Please select travel purpose'],
+    },
+    baggageDescription: {
+        type: String,
+        default: '',
+    },
     order: {
         type: Number,
         default: 0

@@ -19,6 +19,8 @@ interface Booking {
     bookingDate: string;
     governorate: string;
     order: number;
+    travelPurpose?: string;
+    baggageDescription?: string;
 }
 
 interface Governorate {
@@ -75,6 +77,7 @@ export class DashboardComponent implements OnInit {
     selectedUni = signal('all');
     selectedDay = signal('all');
     selectedGov = signal('all'); // ✅ New Governorate Filter
+    selectedTravelPurpose = signal('all'); // ✅ New Travel Purpose Filter
 
     today = new Date();
     editingBookingId: string | null = null;
@@ -137,6 +140,7 @@ export class DashboardComponent implements OnInit {
         const uni = this.selectedUni();
         const day = this.selectedDay();
         const gov = this.selectedGov();
+        const purpose = this.selectedTravelPurpose();
         let all = this.bookings();
 
         if (uni !== 'all') {
@@ -147,6 +151,9 @@ export class DashboardComponent implements OnInit {
         }
         if (gov !== 'all') {
             all = all.filter(b => b.governorate?.trim() === gov.trim());
+        }
+        if (purpose !== 'all') {
+            all = all.filter(b => b.travelPurpose === purpose);
         }
         return all;
     });
@@ -197,6 +204,10 @@ export class DashboardComponent implements OnInit {
 
     onGovChange(val: string) {
         this.selectedGov.set(val);
+    }
+
+    onTravelPurposeChange(val: string) {
+        this.selectedTravelPurpose.set(val);
     }
 
     fetchData() {
@@ -495,6 +506,8 @@ export class DashboardComponent implements OnInit {
             weekday: this.editingBookingData.weekday,
             departureFrom: this.editingBookingData.departureFrom,
             departureTo: this.editingBookingData.departureTo,
+            travelPurpose: this.editingBookingData.travelPurpose,
+            baggageDescription: this.editingBookingData.baggageDescription || '',
             bookingDate: this.editingBookingData.bookingDateLocal
                 ? new Date(this.editingBookingData.bookingDateLocal).toISOString()
                 : this.editingBookingData.bookingDate

@@ -39,6 +39,8 @@ export class BookingForm implements OnInit {
     university: '',
     departureFrom: '',
     departureTo: 'السكن الجامعي HQ',
+    travelPurpose: '',
+    baggageDescription: '',
     fullName: '',
     phoneNumber: ''
   };
@@ -241,6 +243,16 @@ export class BookingForm implements OnInit {
     this.cdr.detectChanges();
   }
 
+  selectPurpose(purpose: string) {
+    this.formData.travelPurpose = purpose;
+    // Clear baggage description if switching away from baggage
+    if (purpose !== 'ارسال حقائب') {
+      this.formData.baggageDescription = '';
+    }
+    this.validate();
+    this.cdr.detectChanges();
+  }
+
   validate() {
     const newErrors: any = {};
     if (!this.formData.governorate) newErrors.governorate = this.lang.isArabic() ? 'يرجى اختيار المحافظة' : 'Please select governorate';
@@ -249,6 +261,7 @@ export class BookingForm implements OnInit {
     if (!this.formData.university) newErrors.university = this.lang.t('err_university');
     if (!this.formData.departureFrom) newErrors.departureFrom = this.lang.t('err_from');
     if (!this.formData.departureTo) newErrors.departureTo = this.lang.t('err_to');
+    if (!this.formData.travelPurpose) newErrors.travelPurpose = this.lang.isArabic() ? 'يرجى اختيار الغرض من السفر' : 'Please select travel purpose';
     if (!this.formData.fullName) newErrors.fullName = this.lang.t('err_name');
 
     const phoneRegex = /^(01)[0-2,5]{1}[0-9]{8}$/;
@@ -300,6 +313,8 @@ export class BookingForm implements OnInit {
       university: this.preselectedUniversity ? university : '',
       departureFrom: '',
       departureTo: '',
+      travelPurpose: '',
+      baggageDescription: '',
       fullName: '',
       phoneNumber: ''
     };
