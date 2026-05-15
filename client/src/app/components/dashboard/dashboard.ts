@@ -88,6 +88,39 @@ export class DashboardComponent implements OnInit {
         return config.governorates?.find(g => g.governorateName === govName);
     }
 
+    ensureGovConfig(config: UniversityConfig, govName: string) {
+        if (!config.governorates) config.governorates = [];
+        const existing = config.governorates.find(g => g.governorateName === govName);
+        if (!existing) {
+            // Create default directional days for new governorate
+            const defaultDays: DirectionalDay[] = [
+                { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: false, times: [] },
+                { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: false, times: [] },
+                { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: false, times: [] },
+                { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: false, times: [] },
+                { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: false, times: [] },
+                { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: false, times: [] },
+                { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
+            ];
+            config.governorates.push({
+                governorateName: govName,
+                pickupLocations: [],
+                destinations: [],
+                directionalDays: defaultDays
+            });
+            // Re-trigger signal update
+            this.universityConfigs.set([...this.universityConfigs()]);
+        }
+        this.activeGovPerUni[config.universityId] = govName;
+    }
+
     // ✅ Get days available for the filter
     availableDaysForFilter = computed(() => {
         // Collect from university configs governorates
@@ -196,10 +229,6 @@ export class DashboardComponent implements OnInit {
             .subscribe({
                 next: (res) => {
                     const sanitized = (res.data || []).map(config => {
-                        if (!this.activeGovPerUni[config.universityId] && config.governorates && config.governorates.length > 0) {
-                            this.activeGovPerUni[config.universityId] = config.governorates[0].governorateName;
-                        }
-
                         return {
                             ...config,
                             governorates: (config.governorates || []).map((gov: any) => ({
@@ -214,6 +243,8 @@ export class DashboardComponent implements OnInit {
                         };
                     });
                     this.universityConfigs.set(sanitized);
+                    // Set initial active governorate per university
+                    this.initActiveGovPerUni();
                 },
                 error: () => { }
             });
@@ -223,9 +254,29 @@ export class DashboardComponent implements OnInit {
             .subscribe({
                 next: (res) => {
                     this.governorates.set(res.data || []);
+                    // Re-initialize active gov per uni when governorates are loaded
+                    this.initActiveGovPerUni();
                 },
                 error: () => { }
             });
+    }
+
+    initActiveGovPerUni() {
+        const govs = this.governorates();
+        const configs = this.universityConfigs();
+        if (!configs.length) return;
+
+        configs.forEach(config => {
+            if (!this.activeGovPerUni[config.universityId]) {
+                // Prefer first governorate from the Governorates collection
+                if (govs.length > 0) {
+                    this.activeGovPerUni[config.universityId] = govs[0].name;
+                } else if (config.governorates && config.governorates.length > 0) {
+                    // Fallback to first saved governorate config
+                    this.activeGovPerUni[config.universityId] = config.governorates[0].governorateName;
+                }
+            }
+        });
     }
 
     updateSetting(config: UniversityConfig) {

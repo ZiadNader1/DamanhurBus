@@ -248,14 +248,15 @@
                 <div class="uni-config-card" *ngFor="let config of universityConfigs()">
                     <h3>{{ config.universityName }}</h3>
 
-                    <div *ngIf="config.governorates.length > 0" class="gov-selector"
+                    <div class="gov-selector"
                         style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                         <label style="color: #94a3b8; font-size: 0.9em; margin-bottom: 8px; display: block;">{{
                             lang.isArabic() ? 'إعدادات خاصة بمحافظة:' : 'Settings specific to Governorate:' }}</label>
                         <select class="dest-input" [(ngModel)]="activeGovPerUni[config.universityId]"
+                            (ngModelChange)="ensureGovConfig(config, $event)"
                             style="width: 100%; padding: 12px; font-size: 16px; font-weight: bold;">
-                            <option *ngFor="let gov of config.governorates" [value]="gov.governorateName">
-                                {{gov.governorateName}}</option>
+                            <option *ngFor="let gov of governorates()" [value]="gov.name">
+                                {{gov.name}}</option>
                         </select>
                     </div>
 
