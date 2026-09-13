@@ -26,6 +26,10 @@ const GovernorateConfigSchema = new mongoose.Schema({
     directionalDays: {
         type: [DayTimeSchema],
         default: []
+    },
+    dailyDirectionalDays: {
+        type: [DayTimeSchema],
+        default: []
     }
 }, { _id: false });
 

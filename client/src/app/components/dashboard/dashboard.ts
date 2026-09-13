@@ -46,6 +46,7 @@ interface GovernorateConfig {
     pickupLocations: { name: string; active: boolean }[];
     destinations: { name: string; active: boolean }[];
     directionalDays: DirectionalDay[];
+    dailyDirectionalDays?: DirectionalDay[];
 }
 
 interface UniversityConfig {
@@ -119,10 +120,31 @@ export class DashboardComponent implements OnInit {
                 governorateName: govName,
                 pickupLocations: [],
                 destinations: [],
-                directionalDays: defaultDays
+                directionalDays: defaultDays,
+                dailyDirectionalDays: JSON.parse(JSON.stringify(defaultDays))
             });
             // Re-trigger signal update
             this.universityConfigs.set([...this.universityConfigs()]);
+        } else {
+            if (!existing.dailyDirectionalDays || existing.dailyDirectionalDays.length === 0) {
+                const defaultDays: DirectionalDay[] = [
+                    { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: false, times: [] },
+                    { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: false, times: [] },
+                    { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: false, times: [] },
+                    { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: false, times: [] },
+                    { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: false, times: [] },
+                    { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: false, times: [] },
+                    { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
+                    { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
+                ];
+                existing.dailyDirectionalDays = defaultDays;
+            }
         }
         this.activeGovPerUni[config.universityId] = govName;
     }
@@ -372,6 +394,59 @@ export class DashboardComponent implements OnInit {
     }
 
     removeTime(day: DirectionalDay, index: number) {
+        day.times.splice(index, 1);
+        if (day.times.length === 0) {
+            day.active = false;
+        }
+    }
+
+    addSpecificDailyTime(govConf: GovernorateConfig, dayId: string, time24: string) {
+        if (!dayId) {
+            alert(this.lang.t('err_day'));
+            return;
+        }
+        if (!time24) {
+            alert(this.lang.t('err_time'));
+            return;
+        }
+
+        const [hoursStr, minutesStr] = time24.split(':');
+        let hours = parseInt(hoursStr, 10);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const paddedHours = hours.toString().padStart(2, '0');
+        const formattedTime = `${paddedHours}:${minutesStr} ${ampm}`;
+
+        if (!govConf.dailyDirectionalDays) {
+            govConf.dailyDirectionalDays = [
+                { id: 'sat-go', name: 'السبت ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'sat-return', name: 'السبت عودة', direction: 'return', active: false, times: [] },
+                { id: 'sun-go', name: 'الأحد ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'sun-return', name: 'الأحد عودة', direction: 'return', active: false, times: [] },
+                { id: 'mon-go', name: 'الاثنين ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'mon-return', name: 'الاثنين عودة', direction: 'return', active: false, times: [] },
+                { id: 'tue-go', name: 'الثلاثاء ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'tue-return', name: 'الثلاثاء عودة', direction: 'return', active: false, times: [] },
+                { id: 'wed-go', name: 'الأربعاء ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'wed-return', name: 'الأربعاء عودة', direction: 'return', active: false, times: [] },
+                { id: 'thu-go', name: 'الخميس ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'thu-return', name: 'الخميس عودة', direction: 'return', active: false, times: [] },
+                { id: 'fri-go', name: 'الجمعة ذهاب', direction: 'go', active: false, times: [] },
+                { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
+            ];
+        }
+        const day = govConf.dailyDirectionalDays.find(d => d.id === dayId);
+        if (day) {
+            if (!day.times) day.times = [];
+            if (!day.times.includes(formattedTime)) {
+                day.times.push(formattedTime);
+            }
+            day.active = day.times.length > 0;
+        }
+    }
+
+    removeDailyTime(day: DirectionalDay, index: number) {
         day.times.splice(index, 1);
         if (day.times.length === 0) {
             day.active = false;

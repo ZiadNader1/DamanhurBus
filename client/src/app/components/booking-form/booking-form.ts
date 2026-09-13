@@ -72,8 +72,16 @@ export class BookingForm implements OnInit {
     return govConf && govConf.directionalDays ? govConf.directionalDays.filter((d: any) => d.active) : [];
   });
 
+  dailyDirectionalDays = computed(() => {
+    const govConf = this.activeGovernorateConfig();
+    if (govConf && govConf.dailyDirectionalDays && govConf.dailyDirectionalDays.length > 0) {
+      return govConf.dailyDirectionalDays.filter((d: any) => d.active);
+    }
+    return this.directionalDays();
+  });
+
   dailyDays = computed(() => {
-    const days = this.directionalDays();
+    const days = this.dailyDirectionalDays();
     const unique = new Set<string>();
     days.forEach((d: any) => {
       const parts = d.name.split(' ');
@@ -85,14 +93,14 @@ export class BookingForm implements OnInit {
   dailyGoTimes = computed(() => {
     const dayName = this.selectedDailyDay();
     if (!dayName) return [];
-    const day = this.directionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'go');
+    const day = this.dailyDirectionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'go');
     return day ? (day.times || []) : [];
   });
 
   dailyReturnTimes = computed(() => {
     const dayName = this.selectedDailyDay();
     if (!dayName) return [];
-    const day = this.directionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'return');
+    const day = this.dailyDirectionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'return');
     return day ? (day.times || []) : [];
   });
 

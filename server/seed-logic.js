@@ -37,25 +37,29 @@ const generateGovConfigs = (hqDest) => {
                 { name: 'كفر الدوار مدخل العمدة', active: true }
             ],
             destinations: [{ name: hqDest, active: true }],
-            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays)),
+            dailyDirectionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
         },
         {
             governorateName: 'كفر الشيخ',
             pickupLocations: [{ name: 'كفر الشيخ', active: true }, { name: 'دسوق', active: true }],
             destinations: [{ name: hqDest, active: true }],
-            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays)),
+            dailyDirectionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
         },
         {
             governorateName: 'طنطا',
             pickupLocations: [{ name: 'طنطا', active: true }],
             destinations: [{ name: hqDest, active: true }],
-            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays)),
+            dailyDirectionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
         },
         {
             governorateName: 'بورسعيد',
             pickupLocations: [{ name: 'بورسعيد', active: true }, { name: 'دمياط', active: true }],
             destinations: [{ name: hqDest, active: true }],
-            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
+            directionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays)),
+            dailyDirectionalDays: JSON.parse(JSON.stringify(defaultDirectionalDays))
         }
     ];
 };
@@ -119,6 +123,13 @@ module.exports = async () => {
                 if (!exists.governorates || exists.governorates.length === 0) {
                     exists.governorates = data.governorates;
                     changed = true;
+                } else {
+                    exists.governorates.forEach((g) => {
+                        if (!g.dailyDirectionalDays || g.dailyDirectionalDays.length === 0) {
+                            g.dailyDirectionalDays = JSON.parse(JSON.stringify(defaultDirectionalDays));
+                            changed = true;
+                        }
+                    });
                 }
                 // Ensure pickupLocations and destinations are removed from top level (cleanup from old schema)
                 if (exists.pickupLocations) {
