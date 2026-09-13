@@ -7,6 +7,16 @@ const connectDB = require('./config/db');
 const app = express();
 
 // Middleware
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
+
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -16,14 +26,20 @@ app.use(cors({
 app.use(express.json());
 
 // Connect Database Middleware for Serverless / Vercel
+let isSeeded = false;
 app.use(async (req, res, next) => {
     if (req.path === '/') return next();
     try {
         await connectDB();
+        if (!isSeeded) {
+            isSeeded = true;
+            const seed = require('./seed-logic');
+            seed().catch(err => console.error('Seed error:', err));
+        }
         next();
     } catch (err) {
         console.error('DB Connection Error:', err);
-        res.status(500).json({ success: false, message: 'Database connection error' });
+        res.status(500).json({ success: false, message: 'Database connection error: ' + err.message });
     }
 });
 
