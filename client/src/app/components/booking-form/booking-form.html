@@ -5,6 +5,18 @@
             <p>{{ lang.t('form_subtitle') }}</p>
         </div>
 
+        <!-- Booking Mode Switcher -->
+        <div class="booking-mode-tabs">
+            <button type="button" class="mode-tab-btn" [class.active]="formData.bookingMode === 'weekly'" (click)="setBookingMode('weekly')">
+                <i class="bi bi-calendar-range"></i>
+                <span>{{ lang.isArabic() ? 'حجز أسبوعي (ذهاب فقط / عودة فقط)' : 'Weekly Booking (One-Way)' }}</span>
+            </button>
+            <button type="button" class="mode-tab-btn" [class.active]="formData.bookingMode === 'daily'" (click)="setBookingMode('daily')">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>{{ lang.isArabic() ? 'حجز يومي (ذهاب وعودة نفس اليوم)' : 'Daily Round-Trip' }}</span>
+            </button>
+        </div>
+
         <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
             <!-- Governorate -->
@@ -31,8 +43,8 @@
                 <span class="error-msg" *ngIf="errors().university">{{errors().university}}</span>
             </div>
 
-            <!-- Weekday (Select) -->
-            <div class="form-group" [class.has-error]="errors().weekday">
+            <!-- Weekday (Select) - Weekly Mode -->
+            <div *ngIf="formData.bookingMode === 'weekly'" class="form-group" [class.has-error]="errors().weekday">
                 <label for="weekday"><i class="bi bi-calendar3"></i> {{ lang.t('form_day') }}</label>
                 <select id="weekday" name="weekday" [(ngModel)]="formData.weekday" (change)="onDayChange()"
                     [disabled]="!formData.governorate || !formData.university">
@@ -42,8 +54,8 @@
                 <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
             </div>
 
-            <!-- Time Slot (Select) -->
-            <div class="form-group" [class.has-error]="errors().timeSlot">
+            <!-- Time Slot (Select) - Weekly Mode -->
+            <div *ngIf="formData.bookingMode === 'weekly'" class="form-group" [class.has-error]="errors().timeSlot">
                 <label for="timeSlot"><i class="bi bi-clock"></i> {{ lang.t('form_time') }}</label>
                 <select id="timeSlot" name="timeSlot" [(ngModel)]="formData.timeSlot" (change)="validate()"
                     [disabled]="!formData.weekday">
@@ -51,6 +63,39 @@
                     <option *ngFor="let time of timeSlots()" [value]="time">{{time}}</option>
                 </select>
                 <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
+            </div>
+
+            <!-- Travel Day - Daily Mode -->
+            <div *ngIf="formData.bookingMode === 'daily'" class="form-group" [class.has-error]="errors().weekday">
+                <label for="dailyDay"><i class="bi bi-calendar-event"></i> {{ lang.isArabic() ? 'يوم السفر' : 'Travel Day' }}</label>
+                <select id="dailyDay" name="dailyDay" [ngModel]="selectedDailyDay()" (ngModelChange)="selectedDailyDay.set($event); onDailyDayChange()"
+                    [disabled]="!formData.governorate || !formData.university">
+                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر يوم السفر' : 'Select Travel Day' }}</option>
+                    <option *ngFor="let d of dailyDays()" [value]="d">{{d}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().weekday">{{errors().weekday}}</span>
+            </div>
+
+            <!-- Departure Time Slot - Daily Mode -->
+            <div *ngIf="formData.bookingMode === 'daily'" class="form-group" [class.has-error]="errors().timeSlot">
+                <label for="dailyGoTime"><i class="bi bi-box-arrow-right"></i> {{ lang.isArabic() ? 'ميعاد الذهاب' : 'Departure Time' }}</label>
+                <select id="dailyGoTime" name="dailyGoTime" [(ngModel)]="formData.timeSlot" (change)="validate()"
+                    [disabled]="!selectedDailyDay()">
+                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر ميعاد الذهاب' : 'Select Departure Time' }}</option>
+                    <option *ngFor="let time of dailyGoTimes()" [value]="time">{{time}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().timeSlot">{{errors().timeSlot}}</span>
+            </div>
+
+            <!-- Return Time Slot - Daily Mode -->
+            <div *ngIf="formData.bookingMode === 'daily'" class="form-group" [class.has-error]="errors().returnTimeSlot">
+                <label for="dailyReturnTime"><i class="bi bi-box-arrow-in-left"></i> {{ lang.isArabic() ? 'ميعاد العودة' : 'Return Time' }}</label>
+                <select id="dailyReturnTime" name="dailyReturnTime" [(ngModel)]="formData.returnTimeSlot" (change)="validate()"
+                    [disabled]="!selectedDailyDay()">
+                    <option value="" disabled selected>{{ lang.isArabic() ? 'اختر ميعاد العودة' : 'Select Return Time' }}</option>
+                    <option *ngFor="let time of dailyReturnTimes()" [value]="time">{{time}}</option>
+                </select>
+                <span class="error-msg" *ngIf="errors().returnTimeSlot">{{errors().returnTimeSlot}}</span>
             </div>
 
             <!-- Departure From (Select) -->

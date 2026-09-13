@@ -33,9 +33,11 @@ export class BookingForm implements OnInit {
   };
 
   formData = {
+    bookingMode: 'weekly' as 'weekly' | 'daily',
     governorate: '',
     weekday: '',
     timeSlot: '',
+    returnTimeSlot: '',
     university: '',
     departureFrom: '',
     departureTo: 'السكن الجامعي HQ',
@@ -52,6 +54,7 @@ export class BookingForm implements OnInit {
   // Dynamic lists from backend - using signals for reactivity
   governorates = signal<Governorate[]>([]);
   timeSlots = signal<string[]>([]);
+  selectedDailyDay = signal<string>('');
 
   activeUniversityConfig = signal<any>(null);
   selectedGovernorateId = signal<string>(''); // signal wrapper so computed() can track it
@@ -67,6 +70,30 @@ export class BookingForm implements OnInit {
   directionalDays = computed(() => {
     const govConf = this.activeGovernorateConfig();
     return govConf && govConf.directionalDays ? govConf.directionalDays.filter((d: any) => d.active) : [];
+  });
+
+  dailyDays = computed(() => {
+    const days = this.directionalDays();
+    const unique = new Set<string>();
+    days.forEach((d: any) => {
+      const parts = d.name.split(' ');
+      if (parts[0]) unique.add(parts[0]);
+    });
+    return Array.from(unique);
+  });
+
+  dailyGoTimes = computed(() => {
+    const dayName = this.selectedDailyDay();
+    if (!dayName) return [];
+    const day = this.directionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'go');
+    return day ? (day.times || []) : [];
+  });
+
+  dailyReturnTimes = computed(() => {
+    const dayName = this.selectedDailyDay();
+    if (!dayName) return [];
+    const day = this.directionalDays().find((d: any) => d.name.startsWith(dayName) && d.direction === 'return');
+    return day ? (day.times || []) : [];
   });
 
   pickupLocations = computed(() => {
@@ -87,6 +114,9 @@ export class BookingForm implements OnInit {
   }
 
   filteredPickupLocations = computed(() => {
+    if (this.formData.bookingMode === 'daily') {
+      return this.pickupLocations();
+    }
     const direction = this.selectedDirection;
     if (direction === 'return') {
       return this.destinations();
@@ -96,6 +126,9 @@ export class BookingForm implements OnInit {
   });
 
   filteredDestinations = computed(() => {
+    if (this.formData.bookingMode === 'daily') {
+      return this.destinations();
+    }
     const direction = this.selectedDirection;
     if (direction === 'return') {
       return this.pickupLocations();
@@ -122,6 +155,27 @@ export class BookingForm implements OnInit {
     });
     return Object.entries(groups).map(([name, options]) => ({ name, options }));
   });
+
+  setBookingMode(mode: 'weekly' | 'daily') {
+    this.formData.bookingMode = mode;
+    this.formData.weekday = '';
+    this.formData.timeSlot = '';
+    this.formData.returnTimeSlot = '';
+    this.selectedDailyDay.set('');
+    this.formData.departureFrom = '';
+    this.formData.departureTo = '';
+    this.validate();
+    this.cdr.detectChanges();
+  }
+
+  onDailyDayChange() {
+    const day = this.selectedDailyDay();
+    this.formData.weekday = day ? `${day} (ذهاب وعودة)` : '';
+    this.formData.timeSlot = '';
+    this.formData.returnTimeSlot = '';
+    this.validate();
+    this.cdr.detectChanges();
+  }
 
   constructor(
     private http: HttpClient,
@@ -256,9 +310,17 @@ export class BookingForm implements OnInit {
   validate() {
     const newErrors: any = {};
     if (!this.formData.governorate) newErrors.governorate = this.lang.isArabic() ? 'يرجى اختيار المحافظة' : 'Please select governorate';
-    if (!this.formData.weekday) newErrors.weekday = this.lang.t('err_day');
-    if (!this.formData.timeSlot) newErrors.timeSlot = this.lang.t('err_time');
     if (!this.formData.university) newErrors.university = this.lang.t('err_university');
+
+    if (this.formData.bookingMode === 'daily') {
+      if (!this.selectedDailyDay()) newErrors.weekday = this.lang.isArabic() ? 'يرجى اختيار يوم السفر' : 'Please select travel day';
+      if (!this.formData.timeSlot) newErrors.timeSlot = this.lang.isArabic() ? 'يرجى اختيار ميعاد الذهاب' : 'Please select departure time';
+      if (!this.formData.returnTimeSlot) newErrors.returnTimeSlot = this.lang.isArabic() ? 'يرجى اختيار ميعاد العودة' : 'Please select return time';
+    } else {
+      if (!this.formData.weekday) newErrors.weekday = this.lang.t('err_day');
+      if (!this.formData.timeSlot) newErrors.timeSlot = this.lang.t('err_time');
+    }
+
     if (!this.formData.departureFrom) newErrors.departureFrom = this.lang.t('err_from');
     if (!this.formData.departureTo) newErrors.departureTo = this.lang.t('err_to');
     if (!this.formData.travelPurpose) newErrors.travelPurpose = this.lang.isArabic() ? 'يرجى اختيار الغرض من السفر' : 'Please select travel purpose';
@@ -305,11 +367,12 @@ export class BookingForm implements OnInit {
 
   resetForm() {
     const university = this.formData.university;
-    const dest = this.formData.departureTo;
     this.formData = {
+      bookingMode: 'weekly',
       governorate: '',
       weekday: '',
       timeSlot: '',
+      returnTimeSlot: '',
       university: this.preselectedUniversity ? university : '',
       departureFrom: '',
       departureTo: '',
@@ -318,6 +381,7 @@ export class BookingForm implements OnInit {
       fullName: '',
       phoneNumber: ''
     };
+    this.selectedDailyDay.set('');
     this.errors.set({});
   }
 }

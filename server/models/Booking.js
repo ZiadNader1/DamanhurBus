@@ -55,6 +55,15 @@ const bookingSchema = new mongoose.Schema({
     order: {
         type: Number,
         default: 0
+    },
+    bookingMode: {
+        type: String,
+        enum: ['weekly', 'daily'],
+        default: 'weekly'
+    },
+    returnTimeSlot: {
+        type: String,
+        default: ''
     }
 });
 

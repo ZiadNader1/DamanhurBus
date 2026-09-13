@@ -21,7 +21,50 @@
 
 .form-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+}
+
+/* Mode Switcher Tabs */
+.booking-mode-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: var(--input-bg);
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.mode-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.mode-tab-btn i {
+    font-size: 1.2rem;
+}
+
+.mode-tab-btn:hover {
+    color: var(--text-color);
+}
+
+.mode-tab-btn.active {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: white;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
 }
 
 .form-logo {

@@ -14,6 +14,8 @@ interface Booking {
     university: string;
     weekday: string;
     timeSlot: string;
+    returnTimeSlot?: string;
+    bookingMode?: 'weekly' | 'daily';
     departureFrom: string;
     departureTo: string;
     bookingDate: string;
@@ -78,6 +80,7 @@ export class DashboardComponent implements OnInit {
     selectedDay = signal('all');
     selectedGov = signal('all'); // ✅ New Governorate Filter
     selectedTravelPurpose = signal('all'); // ✅ New Travel Purpose Filter
+    selectedBookingMode = signal('all'); // ✅ New Booking Mode Filter ('all', 'weekly', 'daily')
 
     today = new Date();
     editingBookingId: string | null = null;
@@ -141,6 +144,7 @@ export class DashboardComponent implements OnInit {
         const day = this.selectedDay();
         const gov = this.selectedGov();
         const purpose = this.selectedTravelPurpose();
+        const mode = this.selectedBookingMode();
         let all = this.bookings();
 
         if (uni !== 'all') {
@@ -154,6 +158,9 @@ export class DashboardComponent implements OnInit {
         }
         if (purpose !== 'all') {
             all = all.filter(b => b.travelPurpose === purpose);
+        }
+        if (mode !== 'all') {
+            all = all.filter(b => (b.bookingMode || 'weekly') === mode);
         }
         return all;
     });
@@ -208,6 +215,10 @@ export class DashboardComponent implements OnInit {
 
     onTravelPurposeChange(val: string) {
         this.selectedTravelPurpose.set(val);
+    }
+
+    onBookingModeChange(val: string) {
+        this.selectedBookingMode.set(val);
     }
 
     fetchData() {
@@ -503,6 +514,8 @@ export class DashboardComponent implements OnInit {
             fullName: this.editingBookingData.fullName,
             phoneNumber: this.editingBookingData.phoneNumber,
             timeSlot: this.editingBookingData.timeSlot,
+            returnTimeSlot: this.editingBookingData.returnTimeSlot || '',
+            bookingMode: this.editingBookingData.bookingMode || 'weekly',
             weekday: this.editingBookingData.weekday,
             departureFrom: this.editingBookingData.departureFrom,
             departureTo: this.editingBookingData.departureTo,

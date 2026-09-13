@@ -15,7 +15,9 @@ exports.createBooking = async (req, res) => {
             departureTo,
             governorate,
             travelPurpose,
-            baggageDescription
+            baggageDescription,
+            bookingMode,
+            returnTimeSlot
         } = req.body;
 
         // Assign order as max+1 for same weekday/timeSlot so new bookings go to end
@@ -33,6 +35,8 @@ exports.createBooking = async (req, res) => {
             governorate,
             travelPurpose,
             baggageDescription: baggageDescription || '',
+            bookingMode: bookingMode || 'weekly',
+            returnTimeSlot: returnTimeSlot || '',
             order: nextOrder
         });
 
@@ -95,9 +99,9 @@ exports.updateBookingOrder = async (req, res) => {
 // @access  Private (Admin)
 exports.updateBooking = async (req, res) => {
     try {
-        const { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, governorate, travelPurpose, baggageDescription, bookingDate } = req.body;
+        const { fullName, phoneNumber, timeSlot, returnTimeSlot, bookingMode, weekday, departureFrom, departureTo, governorate, travelPurpose, baggageDescription, bookingDate } = req.body;
 
-        const updateFields = { fullName, phoneNumber, timeSlot, weekday, departureFrom, departureTo, governorate, travelPurpose, baggageDescription };
+        const updateFields = { fullName, phoneNumber, timeSlot, returnTimeSlot, bookingMode, weekday, departureFrom, departureTo, governorate, travelPurpose, baggageDescription };
         if (bookingDate) updateFields.bookingDate = new Date(bookingDate);
 
         const booking = await Booking.findByIdAndUpdate(

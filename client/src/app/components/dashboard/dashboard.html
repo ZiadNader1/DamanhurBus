@@ -75,6 +75,16 @@
                         </select>
                     </div>
 
+                    <!-- ✅ Booking Mode Filter -->
+                    <div class="filter-wrapper">
+                        <i class="bi bi-ui-checks filter-icon"></i>
+                        <select class="uni-select" [ngModel]="selectedBookingMode()" (ngModelChange)="onBookingModeChange($event)">
+                            <option value="all">{{ lang.isArabic() ? 'كل أنواع الحجز' : 'All Booking Types' }}</option>
+                            <option value="weekly">{{ lang.isArabic() ? 'حجز أسبوعي' : 'Weekly Booking' }}</option>
+                            <option value="daily">{{ lang.isArabic() ? 'حجز يومي (ذهاب وعودة)' : 'Daily Round-Trip' }}</option>
+                        </select>
+                    </div>
+
                     <button class="toolbar-btn refresh-btn" (click)="fetchData()">
                         <i class="bi bi-arrow-clockwise"></i>
                         <span>{{ lang.t('dash_refresh') }}</span>
@@ -136,13 +146,29 @@
                             </td>
                             <td class="text-center">
                                 <ng-container *ngIf="editingBookingId !== booking._id">
-                                    {{ booking.timeSlot }}
+                                    <div style="margin-bottom: 2px;">
+                                        <span *ngIf="booking.bookingMode === 'daily'" class="mode-badge daily">
+                                            🔄 {{ lang.isArabic() ? 'يومي' : 'Daily' }}
+                                        </span>
+                                        <span *ngIf="!booking.bookingMode || booking.bookingMode === 'weekly'" class="mode-badge weekly">
+                                            📌 {{ lang.isArabic() ? 'أسبوعي' : 'Weekly' }}
+                                        </span>
+                                    </div>
+                                    <div style="font-weight: 600;">
+                                        <span>{{ booking.timeSlot }}</span>
+                                        <span *ngIf="booking.bookingMode === 'daily' && booking.returnTimeSlot" style="color: #4f46e5; font-weight: 700; font-size: 11.5px; display: block; margin-top: 2px;">
+                                            ↩️ {{ lang.isArabic() ? 'عودة:' : 'Return:' }} {{ booking.returnTimeSlot }}
+                                        </span>
+                                    </div>
                                 </ng-container>
-                                <select *ngIf="editingBookingId === booking._id"
-                                    [(ngModel)]="editingBookingData.timeSlot" class="edit-select">
-                                    <option *ngFor="let time of editingAvailableTimes" [value]="time">{{ time }}
-                                    </option>
-                                </select>
+                                <div *ngIf="editingBookingId === booking._id">
+                                    <label style="font-size:11px;">الذهاب:</label>
+                                    <input [(ngModel)]="editingBookingData.timeSlot" class="edit-select w-100" style="padding:2px 4px; font-size:12px">
+                                    <div *ngIf="editingBookingData.bookingMode === 'daily'" style="margin-top:4px;">
+                                        <label style="font-size:11px;">العودة:</label>
+                                        <input [(ngModel)]="editingBookingData.returnTimeSlot" class="edit-select w-100" style="padding:2px 4px; font-size:12px">
+                                    </div>
+                                </div>
                             </td>
                             <td class="text-center">
                                 <span>{{ booking.governorate }}</span>
