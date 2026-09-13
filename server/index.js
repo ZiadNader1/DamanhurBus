@@ -8,12 +8,24 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: ['https://damanhurbuses.netlify.app', 'http://localhost:4200'],
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(express.json());
+
+// Connect Database Middleware for Serverless / Vercel
+app.use(async (req, res, next) => {
+    if (req.path === '/') return next();
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('DB Connection Error:', err);
+        res.status(500).json({ success: false, message: 'Database connection error' });
+    }
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -28,16 +40,19 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect Database
-connectDB().then(async () => {
-    console.log('Running auto-seed...');
-    const seed = require('./seed-logic');
-    await seed();
+if (require.main === module) {
+    connectDB().then(async () => {
+        console.log('Running auto-seed...');
+        const seed = require('./seed-logic');
+        await seed();
 
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    }).catch(err => {
+        console.error('Initialization error:', err);
+        process.exit(1);
     });
-}).catch(err => {
-    console.error('Initialization error:', err);
-    process.exit(1);
-});
+}
+
+module.exports = app;
