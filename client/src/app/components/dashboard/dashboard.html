@@ -423,29 +423,60 @@
                         <div class="setting-section" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; margin-top: 20px;">
                             <h4><i class="bi bi-arrow-repeat" style="color: #6366f1;"></i> {{ lang.isArabic() ? 'مواعيد الحجز اليومي (ذهاب وعودة)' : 'Daily Travel Schedule' }}</h4>
                             <div class="add-time-form"
-                                style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.15);">
-                                <select #dailyDaySelect class="dest-input" style="flex: 1; min-width: 200px; padding: 12px;">
-                                    <option value="" disabled selected>{{ lang.t('dash_choose_day') }}</option>
-                                    <option *ngFor="let day of (activeGov.dailyDirectionalDays || activeGov.directionalDays)" [value]="day.id">{{ day.name }}</option>
-                                </select>
-                                <input type="time" #dailyTimeInput class="dest-input" style="width: auto; padding: 12px;">
+                                style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.15); align-items: flex-end;">
+                                
+                                <div style="flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 4px;">
+                                    <label style="font-size: 11px; color: #818cf8; font-weight: bold;">{{ lang.isArabic() ? 'يوم السفر' : 'Travel Day' }}</label>
+                                    <select #dailyDaySelect class="dest-input" style="padding: 10px;">
+                                        <option value="" disabled selected>{{ lang.isArabic() ? 'اختر اليوم' : 'Select Day' }}</option>
+                                        <option *ngFor="let day of dailyWeekDays" [value]="day">{{ day }}</option>
+                                    </select>
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label style="font-size: 11px; color: #10b981; font-weight: bold;">↗️ {{ lang.isArabic() ? 'ميعاد الذهاب' : 'Departure Time' }}</label>
+                                    <input type="time" #dailyGoTimeInput class="dest-input" style="width: auto; padding: 10px;">
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label style="font-size: 11px; color: #6366f1; font-weight: bold;">↙️ {{ lang.isArabic() ? 'ميعاد العودة' : 'Return Time' }}</label>
+                                    <input type="time" #dailyReturnTimeInput class="dest-input" style="width: auto; padding: 10px;">
+                                </div>
+
                                 <button
-                                    style="background: #6366f1; color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;"
-                                    (click)="addSpecificDailyTime(activeGov, dailyDaySelect.value, dailyTimeInput.value); dailyDaySelect.value=''; dailyTimeInput.value=''">
-                                    + {{ lang.t('dash_add_time') }}
+                                    style="background: #6366f1; color: white; border: none; padding: 11px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"
+                                    (click)="addSpecificDailySchedule(activeGov, dailyDaySelect.value, dailyGoTimeInput.value, dailyReturnTimeInput.value); dailyDaySelect.value=''; dailyGoTimeInput.value=''; dailyReturnTimeInput.value=''">
+                                    + {{ lang.isArabic() ? 'إضافة المواعيد' : 'Add Times' }}
                                 </button>
                             </div>
 
                             <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <ng-container *ngFor="let day of (activeGov.dailyDirectionalDays || activeGov.directionalDays)">
-                                    <div *ngIf="day.times && day.times.length > 0"
-                                        style="display: flex; align-items: flex-start; gap: 15px; background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
-                                        <span style="font-weight: bold; min-width: 110px; color: #818cf8; margin-top: 5px;">{{ day.name }}</span>
-                                        <div class="tag-list" style="flex: 1;">
-                                            <span class="tag" *ngFor="let time of day.times; let i = index">
-                                                {{ time }}
-                                                <i class="bi bi-x" (click)="removeDailyTime(day, i)"></i>
-                                            </span>
+                                <ng-container *ngFor="let group of getDailyGroupedDays(activeGov)">
+                                    <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                                        <div style="font-weight: bold; color: #818cf8; font-size: 1.05em; margin-bottom: 8px;">
+                                            📅 {{ group.dayName }}
+                                        </div>
+
+                                        <!-- Departure Times -->
+                                        <div *ngIf="group.goEntry && group.goEntry.times && group.goEntry.times.length > 0" style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                            <span style="font-size: 12px; font-weight: bold; color: #10b981; min-width: 80px;">↗️ {{ lang.isArabic() ? 'الذهاب:' : 'Departure:' }}</span>
+                                            <div class="tag-list" style="flex: 1;">
+                                                <span class="tag" *ngFor="let time of group.goEntry.times; let i = index">
+                                                    {{ time }}
+                                                    <i class="bi bi-x" (click)="removeDailyTime(group.goEntry!, i)"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Return Times -->
+                                        <div *ngIf="group.retEntry && group.retEntry.times && group.retEntry.times.length > 0" style="display: flex; align-items: center; gap: 10px;">
+                                            <span style="font-size: 12px; font-weight: bold; color: #818cf8; min-width: 80px;">↙️ {{ lang.isArabic() ? 'العودة:' : 'Return:' }}</span>
+                                            <div class="tag-list" style="flex: 1;">
+                                                <span class="tag" *ngFor="let time of group.retEntry.times; let i = index">
+                                                    {{ time }}
+                                                    <i class="bi bi-x" (click)="removeDailyTime(group.retEntry!, i)"></i>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </ng-container>

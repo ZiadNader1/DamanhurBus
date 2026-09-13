@@ -400,23 +400,41 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    addSpecificDailyTime(govConf: GovernorateConfig, dayId: string, time24: string) {
-        if (!dayId) {
-            alert(this.lang.t('err_day'));
-            return;
-        }
-        if (!time24) {
-            alert(this.lang.t('err_time'));
-            return;
-        }
+    dailyWeekDays = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
+    format24to12(time24: string): string {
+        if (!time24) return '';
         const [hoursStr, minutesStr] = time24.split(':');
         let hours = parseInt(hoursStr, 10);
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12;
         const paddedHours = hours.toString().padStart(2, '0');
-        const formattedTime = `${paddedHours}:${minutesStr} ${ampm}`;
+        return `${paddedHours}:${minutesStr} ${ampm}`;
+    }
+
+    addSpecificDailySchedule(govConf: GovernorateConfig, baseDayName: string, goTime24: string, returnTime24: string) {
+        if (!baseDayName) {
+            alert(this.lang.isArabic() ? 'يرجى اختيار اليوم' : 'Please select day');
+            return;
+        }
+        if (!goTime24 && !returnTime24) {
+            alert(this.lang.isArabic() ? 'يرجى إدخال ميعاد الذهاب أو ميعاد العودة على الأقل' : 'Please enter departure or return time');
+            return;
+        }
+
+        const map: Record<string, { goId: string; returnId: string }> = {
+            'السبت': { goId: 'sat-go', returnId: 'sat-return' },
+            'الأحد': { goId: 'sun-go', returnId: 'sun-return' },
+            'الاثنين': { goId: 'mon-go', returnId: 'mon-return' },
+            'الثلاثاء': { goId: 'tue-go', returnId: 'tue-return' },
+            'الأربعاء': { goId: 'wed-go', returnId: 'wed-return' },
+            'الخميس': { goId: 'thu-go', returnId: 'thu-return' },
+            'الجمعة': { goId: 'fri-go', returnId: 'fri-return' }
+        };
+
+        const dayKeys = map[baseDayName];
+        if (!dayKeys) return;
 
         if (!govConf.dailyDirectionalDays) {
             govConf.dailyDirectionalDays = [
@@ -436,14 +454,39 @@ export class DashboardComponent implements OnInit {
                 { id: 'fri-return', name: 'الجمعة عودة', direction: 'return', active: false, times: [] }
             ];
         }
-        const day = govConf.dailyDirectionalDays.find(d => d.id === dayId);
-        if (day) {
-            if (!day.times) day.times = [];
-            if (!day.times.includes(formattedTime)) {
-                day.times.push(formattedTime);
+
+        if (goTime24) {
+            const formattedGo = this.format24to12(goTime24);
+            const goEntry = govConf.dailyDirectionalDays.find(d => d.id === dayKeys.goId);
+            if (goEntry) {
+                if (!goEntry.times) goEntry.times = [];
+                if (!goEntry.times.includes(formattedGo)) goEntry.times.push(formattedGo);
+                goEntry.active = true;
             }
-            day.active = day.times.length > 0;
         }
+
+        if (returnTime24) {
+            const formattedRet = this.format24to12(returnTime24);
+            const retEntry = govConf.dailyDirectionalDays.find(d => d.id === dayKeys.returnId);
+            if (retEntry) {
+                if (!retEntry.times) retEntry.times = [];
+                if (!retEntry.times.includes(formattedRet)) retEntry.times.push(formattedRet);
+                retEntry.active = true;
+            }
+        }
+    }
+
+    getDailyGroupedDays(govConf: GovernorateConfig) {
+        const list = govConf.dailyDirectionalDays || [];
+        const result: { dayName: string; goEntry?: DirectionalDay; retEntry?: DirectionalDay }[] = [];
+        this.dailyWeekDays.forEach(dayName => {
+            const goEntry = list.find(d => d.name.startsWith(dayName) && d.direction === 'go');
+            const retEntry = list.find(d => d.name.startsWith(dayName) && d.direction === 'return');
+            if ((goEntry && goEntry.times && goEntry.times.length > 0) || (retEntry && retEntry.times && retEntry.times.length > 0)) {
+                result.push({ dayName, goEntry, retEntry });
+            }
+        });
+        return result;
     }
 
     removeDailyTime(day: DirectionalDay, index: number) {
