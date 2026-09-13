@@ -71,7 +71,8 @@ exports.getMe = async (req, res) => {
 
 // Generate JWT
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    const secret = process.env.JWT_SECRET || 'damanhour_bus_secret_jwt_key_2026_secure';
+    return jwt.sign({ id }, secret, {
         expiresIn: '30d',
     });
 };
